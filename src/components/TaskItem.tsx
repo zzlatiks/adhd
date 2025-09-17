@@ -141,7 +141,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
           onClick={() => hasSubtasks ? setShowSubtasks(!showSubtasks) : onToggle(task.id)}
           className={`flex-shrink-0 w-12 h-12 rounded-full border-3 flex items-center justify-center transition-all duration-300 mr-4 ${
             hasSubtasks 
-              ? 'bg-white border-blue-600 text-blue-600 hover:border-blue-700 hover:text-blue-700' 
+              ? 'bg-white border-blue-500 text-blue-500 hover:border-blue-600 hover:text-blue-600' 
               : 'bg-white border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-400'
           }`}
         >
