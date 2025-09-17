@@ -26,6 +26,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   const completedSubtasks = task.subtasks.filter(subtask => subtask.completed).length;
   const hasSubtasks = task.subtasks.length > 0;
   const isMainTaskCompleted = hasSubtasks ? task.subtasks.every(s => s.completed) : task.completed;
+  const progressPercentage = task.progress || 0;
 
   const handleAddSubtask = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,14 +46,21 @@ const TaskItem: React.FC<TaskItemProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl border-2 border-gray-200 shadow-md hover:shadow-lg transition-all duration-300">
+    <div className="bg-white rounded-xl border-2 border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden">
       <div
-        className={`flex items-center p-4 transition-all duration-300 ${
+        className={`flex items-center p-4 transition-all duration-300 relative ${
           isMainTaskCompleted
             ? 'bg-green-50 border-green-300'
             : 'bg-white'
         }`}
       >
+        {/* Progress Background for subtasks */}
+        {hasSubtasks && progressPercentage > 0 && !isMainTaskCompleted && (
+          <div 
+            className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-blue-100 to-blue-50 transition-all duration-500 rounded-l-xl z-0 pointer-events-none"
+            style={{ width: `${progressPercentage}%` }}
+          />
+        )}
         <button
           onClick={() => hasSubtasks ? setShowSubtasks(!showSubtasks) : onToggle(task.id)}
           className={`flex-shrink-0 w-12 h-12 rounded-full border-3 flex items-center justify-center transition-all duration-300 mr-4 ${
@@ -93,23 +101,29 @@ const TaskItem: React.FC<TaskItemProps> = ({
               )}
             </div>
             {hasSubtasks && (
-              <div className="mt-1 text-sm text-gray-600">
-                {completedSubtasks} из {task.subtasks.length} подзадач выполнено
+              <div className="mt-1">
+                <div className="text-sm text-gray-600 mb-1">
+                  {completedSubtasks} из {task.subtasks.length} подзадач выполнено
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${progressPercentage}%` }}
+                  ></div>
+                </div>
               </div>
             )}
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {hasSubtasks && (
-            <button
-              onClick={() => setShowAddSubtask(!showAddSubtask)}
-              className="flex-shrink-0 w-8 h-8 rounded-lg bg-blue-100 text-blue-500 hover:bg-blue-200 hover:text-blue-600 flex items-center justify-center transition-all duration-200"
-              title="Добавить подзадачу"
-            >
-              <Icon name="Plus" size={16} />
-            </button>
-          )}
+          <button
+            onClick={() => setShowAddSubtask(!showAddSubtask)}
+            className="flex-shrink-0 w-8 h-8 rounded-lg bg-blue-100 text-blue-500 hover:bg-blue-200 hover:text-blue-600 flex items-center justify-center transition-all duration-200"
+            title="Добавить подзадачу"
+          >
+            <Icon name="Plus" size={16} />
+          </button>
           
           <button
             onClick={() => onDelete(task.id)}
@@ -199,18 +213,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
         </div>
       )}
 
-      {/* Add Subtask Button for tasks without subtasks */}
-      {!hasSubtasks && (
-        <div className="border-t border-gray-200 p-2">
-          <button
-            onClick={() => setShowAddSubtask(!showAddSubtask)}
-            className="w-full p-2 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-200 flex items-center justify-center gap-1"
-          >
-            <Icon name="Plus" size={16} />
-            Добавить подзадачи
-          </button>
-        </div>
-      )}
     </div>
   );
 };

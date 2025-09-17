@@ -70,6 +70,7 @@ const initialTasks: Task[] = [
 function App() {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   // Calculate progress for tasks with subtasks
   const calculateProgress = (task: Task): number => {
@@ -197,6 +198,10 @@ function App() {
 
   // New day functionality
   const handleNewDay = () => {
+    setIsConfirmDialogOpen(true);
+  };
+
+  const confirmNewDay = () => {
     setTasks(prevTasks => 
       prevTasks
         .filter(task => task.type === 'daily') // Keep only daily tasks
@@ -210,6 +215,7 @@ function App() {
           progress: 0
         }))
     );
+    setIsConfirmDialogOpen(false);
   };
 
   const completedTasks = tasks.filter(task => task.completed).length;
@@ -334,6 +340,44 @@ function App() {
           onClose={() => setIsModalOpen(false)}
           onAddTask={addTask}
         />
+
+        {/* Confirmation Dialog */}
+        {isConfirmDialogOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-6 w-full max-w-md transform transition-all duration-300 scale-100">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">Подтверждение</h2>
+                <button
+                  onClick={() => setIsConfirmDialogOpen(false)}
+                  className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                >
+                  <Icon name="X" size={20} />
+                </button>
+              </div>
+              <p className="text-gray-600 mb-6">
+                Вы уверены, что хотите удалить прогресс?
+                <br />
+                <span className="text-sm text-gray-500">
+                  Это действие сбросит все ежедневные задачи и удалит временные задачи.
+                </span>
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setIsConfirmDialogOpen(false)}
+                  className="flex-1 p-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-colors"
+                >
+                  Отмена
+                </button>
+                <button
+                  onClick={confirmNewDay}
+                  className="flex-1 p-3 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600 transition-colors"
+                >
+                  Да, сбросить
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
