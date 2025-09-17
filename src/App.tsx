@@ -399,72 +399,37 @@ function App() {
   // Memoized filtered task lists
   const dailyTasks = useMemo(() => getFilteredTasks('daily'), [getFilteredTasks]);
   const temporaryTasks = useMemo(() => getFilteredTasks('temporary'), [getFilteredTasks]);
+  const allTasks = useMemo(() => [...dailyTasks, ...temporaryTasks], [dailyTasks, temporaryTasks]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="container mx-auto px-4 py-6 max-w-4xl">
-        {/* Progress Bar */}
-        <ProgressBar completed={completedTasks} total={totalTasks} />
 
-        {/* Daily Tasks */}
-        {dailyTasks.length > 0 && (
+        {/* All Tasks */}
+        {allTasks.length > 0 && (
           <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100 mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
-                <Icon name="RotateCcw" size={28} className="text-blue-600 mr-3" />
-                <h2 className="text-xl font-bold text-gray-800">Ежедневные задачи</h2>
-              </div>
-              {!showCompletedTasks && tasks.filter(task => task.type === 'daily' && task.completed).length > 0 && (
-                <span className="text-sm text-gray-500">
-                  {tasks.filter(task => task.type === 'daily' && task.completed).length} выполненных скрыто
-                </span>
-              )}
+            {/* Progress Bar at top */}
+            <div className="mb-6">
+              <ProgressBar completed={completedTasks} total={totalTasks} />
             </div>
+            
             <div className="space-y-3">
-              {dailyTasks.map(task => (
-                <TaskItem
+              {allTasks.map(task => (
+                <div
                   key={task.id}
-                  task={task}
-                  onToggle={toggleTask}
-                  onDelete={deleteTask}
-                  onToggleSubtask={toggleSubtask}
-                  onAddSubtask={addSubtask}
-                  onDeleteSubtask={deleteSubtask}
-                  onEdit={handleEditTask}
-                  onEditSubtask={editSubtask}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Temporary Tasks */}
-        {temporaryTasks.length > 0 && (
-          <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100 mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
-                <Icon name="Clock" size={28} className="text-green-600 mr-3" />
-                <h2 className="text-xl font-bold text-gray-800">Временные задачи</h2>
-              </div>
-              {!showCompletedTasks && tasks.filter(task => task.type === 'temporary' && task.completed).length > 0 && (
-                <span className="text-sm text-gray-500">
-                  {tasks.filter(task => task.type === 'temporary' && task.completed).length} выполненных скрыто
-                </span>
-              )}
-            </div>
-            <div className="space-y-3">
-              {temporaryTasks.map(task => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onToggle={toggleTask}
-                  onDelete={deleteTask}
-                  onToggleSubtask={toggleSubtask}
-                  onAddSubtask={addSubtask}
-                  onDeleteSubtask={deleteSubtask}
-                  onEdit={handleEditTask}
-                  onEditSubtask={editSubtask}
-                />
+                  className={task.type === 'temporary' ? 'border-2 border-green-400 rounded-xl p-1' : ''}
+                >
+                  <TaskItem
+                    task={task}
+                    onToggle={toggleTask}
+                    onDelete={deleteTask}
+                    onToggleSubtask={toggleSubtask}
+                    onAddSubtask={addSubtask}
+                    onDeleteSubtask={deleteSubtask}
+                    onEdit={handleEditTask}
+                    onEditSubtask={editSubtask}
+                  />
+                </div>
               ))}
             </div>
           </div>
