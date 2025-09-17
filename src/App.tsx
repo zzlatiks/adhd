@@ -237,8 +237,13 @@ function App() {
 
   // Export/Import functionality
   const exportTasks = () => {
+    const tasksToExport = tasks.map(task => {
+      const { progress, ...taskWithoutProgress } = task;
+      return taskWithoutProgress;
+    });
+    
     const dataToExport = {
-      tasks: tasks,
+      tasks: tasksToExport,
       exportDate: new Date().toISOString(),
       version: '1.0'
     };
@@ -304,8 +309,8 @@ function App() {
             createdAt: subtask.createdAt ? new Date(subtask.createdAt) : new Date()
           };
         }) : [],
-        estimatedMinutes: task.estimatedMinutes ? Number(task.estimatedMinutes) : undefined,
-        progress: 0 // Always recalculate progress instead of importing
+        estimatedMinutes: task.estimatedMinutes ? Number(task.estimatedMinutes) : undefined
+        // Progress will be recalculated automatically by useEffect
       };
     });
   };
@@ -420,10 +425,10 @@ function App() {
                   className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-3 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
                   title="Экспорт задач"
                 >
-                  <Icon name="Download" size={20} />
+                  <Icon name="Upload" size={20} />
                 </button>
                 <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-3 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer" title="Импорт задач">
-                  <Icon name="Upload" size={20} />
+                  <Icon name="Download" size={20} />
                   <input
                     type="file"
                     accept=".json"
