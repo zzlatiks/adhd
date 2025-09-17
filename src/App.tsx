@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Task, TaskCategory } from './types';
-import TaskItem from './components/TaskItem';
+import { useState, useEffect } from 'react';
+import { Task, TaskCategory, Subtask } from './types';
 import AddTaskModal from './components/AddTaskModal';
 import ProgressBar from './components/ProgressBar';
 import CategorySection from './components/CategorySection';
