@@ -397,70 +397,6 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="container mx-auto px-4 py-6 max-w-4xl">
-        {/* Header */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-1">
-                Мои задачи
-              </h1>
-              <p className="text-gray-600 capitalize">
-                {getCurrentDateFormatted()}
-              </p>
-            </div>
-            
-            <div className="flex gap-3 flex-wrap">
-              <button
-                onClick={() => setShowCompletedTasks(!showCompletedTasks)}
-                className={`px-4 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg ${
-                  showCompletedTasks 
-                    ? 'bg-gray-500 hover:bg-gray-600 text-white' 
-                    : 'bg-green-500 hover:bg-green-600 text-white'
-                }`}
-              >
-                <Icon name={showCompletedTasks ? "EyeOff" : "Eye"} size={20} className="mr-2" />
-                {showCompletedTasks ? 'Скрыть' : 'Показать'}
-              </button>
-              
-              <div className="flex gap-2">
-                <button
-                  onClick={exportTasks}
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
-                  title="Экспорт задач"
-                >
-                  <Icon name="Download" size={20} className="mr-2" />
-                  Экспорт
-                </button>
-                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer">
-                  <Icon name="Upload" size={20} className="mr-2" />
-                  Импорт
-                  <input
-                    type="file"
-                    accept=".json"
-                    onChange={handleImportTasks}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-              
-              <button
-                onClick={handleNewDay}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
-              >
-                <Icon name="RefreshCw" size={24} className="mr-2" />
-                Новый день
-              </button>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
-              >
-                <Icon name="Plus" size={24} className="mr-2" />
-                Добавить
-              </button>
-            </div>
-          </div>
-        </div>
-
         {/* Progress Bar */}
         <ProgressBar completed={completedTasks} total={totalTasks} />
 
@@ -546,6 +482,70 @@ function App() {
             </button>
           </div>
         )}
+
+        {/* Header */}
+        <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100 mb-6 mt-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800 mb-1">
+                Мои задачи
+              </h1>
+              <p className="text-gray-600 capitalize">
+                {getCurrentDateFormatted()}
+              </p>
+            </div>
+            
+            <div className="flex gap-3 flex-wrap">
+              <button
+                onClick={() => setShowCompletedTasks(!showCompletedTasks)}
+                className={`px-4 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg ${
+                  showCompletedTasks 
+                    ? 'bg-gray-500 hover:bg-gray-600 text-white' 
+                    : 'bg-green-500 hover:bg-green-600 text-white'
+                }`}
+              >
+                <Icon name={showCompletedTasks ? "EyeOff" : "Eye"} size={20} className="mr-2" />
+                {showCompletedTasks ? 'Скрыть' : 'Показать'}
+              </button>
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={exportTasks}
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+                  title="Экспорт задач"
+                >
+                  <Icon name="Download" size={20} className="mr-2" />
+                  Экспорт
+                </button>
+                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer">
+                  <Icon name="Upload" size={20} className="mr-2" />
+                  Импорт
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={handleImportTasks}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+              
+              <button
+                onClick={handleNewDay}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+              >
+                <Icon name="RefreshCw" size={24} className="mr-2" />
+                Новый день
+              </button>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+              >
+                <Icon name="Plus" size={24} className="mr-2" />
+                Добавить
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* Add Task Modal */}
         <AddTaskModal
