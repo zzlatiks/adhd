@@ -1,9 +1,3 @@
-"scripts": {
-  "dev": "vite --host 0.0.0.0 --port 5000",
-  "build": "vite build", 
-  "start": "vite preview --host 0.0.0.0 --port 5000",
-  "preview": "vite preview"
-}
 {
   "name": "vite-react-typescript-starter",
   "private": true,
@@ -12,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview --port 5000",
+    "start": "vite preview --port 5000"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
