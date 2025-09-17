@@ -71,19 +71,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl border-2 border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-      <div className="flex items-center p-4 transition-all duration-300 relative bg-white">
-        {/* Progress Background for subtasks - including completed state */}
-        {hasSubtasks && progressPercentage > 0 && (
-          <div 
-            className={`absolute left-0 top-0 bottom-0 transition-all duration-500 rounded-l-xl z-0 pointer-events-none ${
-              isMainTaskCompleted 
-                ? 'bg-gradient-to-r from-green-100 to-green-50' 
-                : 'bg-gradient-to-r from-blue-100 to-blue-50'
-            }`}
-            style={{ width: `${progressPercentage}%` }}
-          />
-        )}
+    <div className={`rounded-xl border-2 border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden ${
+      isMainTaskCompleted ? 'bg-green-50 border-green-200' : 'bg-white'
+    }`}>
+      <div className="flex items-center p-4 transition-all duration-300 relative">
         <button
           onClick={() => hasSubtasks ? setShowSubtasks(!showSubtasks) : onToggle(task.id)}
           className="flex-shrink-0 w-12 h-12 rounded-full border-3 flex items-center justify-center transition-all duration-300 mr-4 bg-white border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-400"
@@ -103,7 +94,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-lg font-semibold transition-all duration-300 text-gray-800">
+              <span className={`text-lg font-semibold transition-all duration-300 ${
+                isMainTaskCompleted ? 'text-green-700 line-through' : 'text-gray-800'
+              }`}>
                 {task.title}
               </span>
               {task.estimatedMinutes && (
