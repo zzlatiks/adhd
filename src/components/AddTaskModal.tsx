@@ -4,7 +4,7 @@ import Icon from './Icon';
 interface AddTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddTask: (title: string, category: 'morning' | 'afternoon' | 'evening', icon: string, estimatedMinutes?: number) => void;
+  onAddTask: (title: string, type: 'daily' | 'temporary', icon: string, estimatedMinutes?: number) => void;
 }
 
 const taskIcons = [
@@ -14,7 +14,7 @@ const taskIcons = [
 
 const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask }) => {
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<'morning' | 'afternoon' | 'evening'>('morning');
+  const [taskType, setTaskType] = useState<'daily' | 'temporary'>('daily');
   const [selectedIcon, setSelectedIcon] = useState('Circle');
   const [estimatedMinutes, setEstimatedMinutes] = useState<number | ''>('');
 
@@ -22,7 +22,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask 
     e.preventDefault();
     if (title.trim()) {
       const minutes = estimatedMinutes === '' ? undefined : Number(estimatedMinutes);
-      onAddTask(title.trim(), category, selectedIcon, minutes);
+      onAddTask(title.trim(), taskType, selectedIcon, minutes);
       setTitle('');
       setSelectedIcon('Circle');
       setEstimatedMinutes('');
@@ -62,20 +62,19 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask 
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Время дня
+              Тип задачи
             </label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {[
-                { value: 'morning', label: 'Утром', color: 'bg-yellow-100 text-yellow-700' },
-                { value: 'afternoon', label: 'Днем', color: 'bg-blue-100 text-blue-700' },
-                { value: 'evening', label: 'Вечером', color: 'bg-purple-100 text-purple-700' }
+                { value: 'daily', label: 'Ежедневная', color: 'bg-blue-100 text-blue-700' },
+                { value: 'temporary', label: 'Временная', color: 'bg-green-100 text-green-700' }
               ].map((option) => (
                 <button
                   key={option.value}
                   type="button"
-                  onClick={() => setCategory(option.value as any)}
+                  onClick={() => setTaskType(option.value as 'daily' | 'temporary')}
                   className={`p-3 rounded-xl font-semibold transition-all ${
-                    category === option.value
+                    taskType === option.value
                       ? option.color + ' ring-2 ring-offset-2 ring-current'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}

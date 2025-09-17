@@ -8,18 +8,11 @@ export interface Subtask {
 export interface Task {
   id: string;
   title: string;
-  category: 'morning' | 'afternoon' | 'evening';
+  type: 'temporary' | 'daily';
   completed: boolean;
   icon: string;
   createdAt: Date;
   subtasks: Subtask[];
   estimatedMinutes?: number;
-}
-
-export interface TaskCategory {
-  id: string;
-  name: string;
-  icon: string;
-  color: string;
-  bgColor: string;
+  progress?: number; // 0-100 based on subtask completion
 }

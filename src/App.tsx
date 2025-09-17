@@ -1,39 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Task, TaskCategory, Subtask } from './types';
+import { Task, Subtask } from './types';
+import TaskItem from './components/TaskItem';
 import AddTaskModal from './components/AddTaskModal';
 import ProgressBar from './components/ProgressBar';
-import CategorySection from './components/CategorySection';
 import Icon from './components/Icon';
 
-const categories: TaskCategory[] = [
-  {
-    id: 'morning',
-    name: 'Утренние дела',
-    icon: 'Sun',
-    color: 'text-yellow-600',
-    bgColor: 'bg-yellow-50'
-  },
-  {
-    id: 'afternoon',
-    name: 'Дневные дела',
-    icon: 'CloudSun',
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-50'
-  },
-  {
-    id: 'evening',
-    name: 'Вечерние дела',
-    icon: 'Moon',
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-50'
-  }
-];
+// Removed categories - now using task types instead
 
 const initialTasks: Task[] = [
   {
     id: '1',
     title: 'Почистить зубы',
-    category: 'morning',
+    type: 'daily',
     completed: false,
     icon: 'Toothbrush',
     createdAt: new Date(),
@@ -43,7 +21,7 @@ const initialTasks: Task[] = [
   {
     id: '2',
     title: 'Сделать зарядку',
-    category: 'morning',
+    type: 'daily',
     completed: false,
     icon: 'Activity',
     createdAt: new Date(),
@@ -56,7 +34,7 @@ const initialTasks: Task[] = [
   {
     id: '3',
     title: 'Позавтракать',
-    category: 'morning',
+    type: 'daily',
     completed: false,
     icon: 'Utensils',
     createdAt: new Date(),
@@ -66,7 +44,7 @@ const initialTasks: Task[] = [
   {
     id: '4',
     title: 'Сделать домашнее задание',
-    category: 'afternoon',
+    type: 'temporary',
     completed: false,
     icon: 'BookOpen',
     createdAt: new Date(),
@@ -80,7 +58,7 @@ const initialTasks: Task[] = [
   {
     id: '5',
     title: 'Убрать игрушки',
-    category: 'evening',
+    type: 'daily',
     completed: false,
     icon: 'Home',
     createdAt: new Date(),
@@ -92,6 +70,25 @@ const initialTasks: Task[] = [
 function App() {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Calculate progress for tasks with subtasks
+  const calculateProgress = (task: Task): number => {
+    if (task.subtasks.length === 0) {
+      return task.completed ? 100 : 0;
+    }
+    const completedSubtasks = task.subtasks.filter(subtask => subtask.completed).length;
+    return Math.round((completedSubtasks / task.subtasks.length) * 100);
+  };
+
+  // Update tasks with progress whenever tasks change
+  useEffect(() => {
+    setTasks(prevTasks => 
+      prevTasks.map(task => ({
+        ...task,
+        progress: calculateProgress(task)
+      }))
+    );
+  }, [tasks.length, tasks.map(t => t.completed).join(','), tasks.map(t => t.subtasks.map(s => s.completed).join('')).join(',')]);
 
   // Load tasks from localStorage on component mount
   useEffect(() => {
@@ -183,18 +180,36 @@ function App() {
     setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
   };
 
-  const addTask = (title: string, category: 'morning' | 'afternoon' | 'evening', icon: string, estimatedMinutes?: number) => {
+  const addTask = (title: string, type: 'daily' | 'temporary', icon: string, estimatedMinutes?: number) => {
     const newTask: Task = {
       id: Date.now().toString(),
       title,
-      category,
+      type,
       completed: false,
       icon,
       createdAt: new Date(),
       subtasks: [],
-      estimatedMinutes
+      estimatedMinutes,
+      progress: 0
     };
     setTasks(prevTasks => [...prevTasks, newTask]);
+  };
+
+  // New day functionality
+  const handleNewDay = () => {
+    setTasks(prevTasks => 
+      prevTasks
+        .filter(task => task.type === 'daily') // Keep only daily tasks
+        .map(task => ({
+          ...task,
+          completed: false, // Reset completion status
+          subtasks: task.subtasks.map(subtask => ({
+            ...subtask,
+            completed: false // Reset subtask completion
+          })),
+          progress: 0
+        }))
+    );
   };
 
   const completedTasks = tasks.filter(task => task.completed).length;
@@ -226,35 +241,73 @@ function App() {
               </p>
             </div>
             
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
-            >
-              <Icon name="Plus" size={24} className="mr-2" />
-              Добавить
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={handleNewDay}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+              >
+                <Icon name="RefreshCw" size={24} className="mr-2" />
+                Новый день
+              </button>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+              >
+                <Icon name="Plus" size={24} className="mr-2" />
+                Добавить
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Progress Bar */}
         <ProgressBar completed={completedTasks} total={totalTasks} />
 
-        {/* Task Categories */}
-        {categories.map((category) => {
-          const categoryTasks = tasks.filter(task => task.category === category.id);
-          return (
-            <CategorySection
-              key={category.id}
-              category={category}
-              tasks={categoryTasks}
-              onToggleTask={toggleTask}
-              onDeleteTask={deleteTask}
-              onToggleSubtask={toggleSubtask}
-              onAddSubtask={addSubtask}
-              onDeleteSubtask={deleteSubtask}
-            />
-          );
-        })}
+        {/* Daily Tasks */}
+        {tasks.filter(task => task.type === 'daily').length > 0 && (
+          <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100 mb-6">
+            <div className="flex items-center mb-4">
+              <Icon name="RotateCcw" size={28} className="text-blue-600 mr-3" />
+              <h2 className="text-xl font-bold text-gray-800">Ежедневные задачи</h2>
+            </div>
+            <div className="space-y-3">
+              {tasks.filter(task => task.type === 'daily').map(task => (
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  onToggle={toggleTask}
+                  onDelete={deleteTask}
+                  onToggleSubtask={toggleSubtask}
+                  onAddSubtask={addSubtask}
+                  onDeleteSubtask={deleteSubtask}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Temporary Tasks */}
+        {tasks.filter(task => task.type === 'temporary').length > 0 && (
+          <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100 mb-6">
+            <div className="flex items-center mb-4">
+              <Icon name="Clock" size={28} className="text-green-600 mr-3" />
+              <h2 className="text-xl font-bold text-gray-800">Временные задачи</h2>
+            </div>
+            <div className="space-y-3">
+              {tasks.filter(task => task.type === 'temporary').map(task => (
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  onToggle={toggleTask}
+                  onDelete={deleteTask}
+                  onToggleSubtask={toggleSubtask}
+                  onAddSubtask={addSubtask}
+                  onDeleteSubtask={deleteSubtask}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Empty State */}
         {totalTasks === 0 && (

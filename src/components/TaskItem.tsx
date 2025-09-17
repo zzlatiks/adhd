@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Task, Subtask } from '../types';
+import { Task } from '../types';
 import Icon from './Icon';
 
 interface TaskItemProps {
