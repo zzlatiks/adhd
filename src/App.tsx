@@ -527,7 +527,7 @@ function App() {
             <div className="flex gap-3 flex-wrap">
               <button
                 onClick={() => setShowCompletedTasks(!showCompletedTasks)}
-                className="px-6 py-3 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg bg-gray-500 hover:bg-gray-600 text-white font-semibold"
+                className="px-4 py-2 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg bg-gray-500 hover:bg-gray-600 text-white font-semibold"
                 title={showCompletedTasks ? 'Скрыть выполненные' : 'Показать выполненные'}
               >
                 <Icon name={showCompletedTasks ? "Eye" : "EyeOff"} size={20} />
@@ -536,12 +536,12 @@ function App() {
               <div className="flex gap-2">
                 <button
                   onClick={exportTasks}
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
                   title="Экспорт задач"
                 >
                   <Icon name="Upload" size={20} />
                 </button>
-                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer font-semibold" title="Импорт задач">
+                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer font-semibold" title="Импорт задач">
                   <Icon name="Download" size={20} />
                   <input
                     type="file"
