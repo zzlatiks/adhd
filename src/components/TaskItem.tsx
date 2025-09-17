@@ -145,7 +145,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
             className="flex-shrink-0 w-8 h-8 rounded-lg bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700 flex items-center justify-center transition-all duration-200"
             title="Редактировать задачу"
           >
-            <Icon name="Edit" size={14} />
+            <Icon name="Pencil" size={14} />
           </button>
           
           <button
@@ -227,7 +227,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                       className="flex-shrink-0 w-6 h-6 rounded bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700 flex items-center justify-center transition-all duration-200 mr-1"
                       title="Редактировать подзадачу"
                     >
-                      <Icon name="Edit" size={10} />
+                      <Icon name="Pencil" size={10} />
                     </button>
                     
                     <button

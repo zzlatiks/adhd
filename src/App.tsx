@@ -375,17 +375,6 @@ function App() {
   const completedTasks = useMemo(() => tasks.filter(task => task.completed).length, [tasks]);
   const totalTasks = useMemo(() => tasks.length, [tasks]);
   
-  // Current date formatting (recomputed each render to stay current)
-  const getCurrentDateFormatted = () => {
-    const today = new Date();
-    const options: Intl.DateTimeFormatOptions = { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    };
-    return today.toLocaleDateString('ru-RU', options);
-  };
 
   // Memoized task filtering
   const getFilteredTasks = useCallback((taskType: 'daily' | 'temporary') => {
@@ -458,39 +447,30 @@ function App() {
         <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100 mb-6 mt-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-1">
+              <h1 className="text-3xl font-bold text-gray-800">
                 Мои задачи
               </h1>
-              <p className="text-gray-600 capitalize">
-                {getCurrentDateFormatted()}
-              </p>
             </div>
             
             <div className="flex gap-3 flex-wrap">
               <button
                 onClick={() => setShowCompletedTasks(!showCompletedTasks)}
-                className={`px-4 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg ${
-                  showCompletedTasks 
-                    ? 'bg-gray-500 hover:bg-gray-600 text-white' 
-                    : 'bg-green-500 hover:bg-green-600 text-white'
-                }`}
+                className="px-3 py-3 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg bg-gray-500 hover:bg-gray-600 text-white"
+                title={showCompletedTasks ? 'Скрыть выполненные' : 'Показать выполненные'}
               >
-                <Icon name={showCompletedTasks ? "EyeOff" : "Eye"} size={20} className="mr-2" />
-                {showCompletedTasks ? 'Скрыть' : 'Показать'}
+                <Icon name={showCompletedTasks ? "Eye" : "EyeOff"} size={20} />
               </button>
               
               <div className="flex gap-2">
                 <button
                   onClick={exportTasks}
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-3 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
                   title="Экспорт задач"
                 >
-                  <Icon name="Download" size={20} className="mr-2" />
-                  Экспорт
+                  <Icon name="Download" size={20} />
                 </button>
-                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer">
-                  <Icon name="Upload" size={20} className="mr-2" />
-                  Импорт
+                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-3 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer" title="Импорт задач">
+                  <Icon name="Upload" size={20} />
                   <input
                     type="file"
                     accept=".json"
@@ -509,10 +489,10 @@ function App() {
               </button>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-3 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+                title="Добавить задачу"
               >
-                <Icon name="Plus" size={24} className="mr-2" />
-                Добавить
+                <Icon name="Plus" size={24} />
               </button>
             </div>
           </div>
