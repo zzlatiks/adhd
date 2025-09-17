@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Task, Subtask } from './types';
 import TaskItem from './components/TaskItem';
 import AddTaskModal from './components/AddTaskModal';
@@ -116,15 +116,15 @@ function App() {
     localStorage.setItem('adhd-tasks', JSON.stringify(tasks));
   }, [tasks]);
 
-  const toggleTask = (taskId: string) => {
+  const toggleTask = useCallback((taskId: string) => {
     setTasks(prevTasks =>
       prevTasks.map(task =>
         task.id === taskId ? { ...task, completed: !task.completed } : task
       )
     );
-  };
+  }, []);
 
-  const toggleSubtask = (taskId: string, subtaskId: string) => {
+  const toggleSubtask = useCallback((taskId: string, subtaskId: string) => {
     setTasks(prevTasks =>
       prevTasks.map(task => {
         if (task.id === taskId) {
@@ -141,9 +141,9 @@ function App() {
         return task;
       })
     );
-  };
+  }, []);
 
-  const addSubtask = (taskId: string, subtaskTitle: string) => {
+  const addSubtask = useCallback((taskId: string, subtaskTitle: string) => {
     setTasks(prevTasks =>
       prevTasks.map(task => {
         if (task.id === taskId) {
@@ -162,9 +162,9 @@ function App() {
         return task;
       })
     );
-  };
+  }, []);
 
-  const deleteSubtask = (taskId: string, subtaskId: string) => {
+  const deleteSubtask = useCallback((taskId: string, subtaskId: string) => {
     setTasks(prevTasks =>
       prevTasks.map(task => {
         if (task.id === taskId) {
@@ -179,9 +179,9 @@ function App() {
         return task;
       })
     );
-  };
+  }, []);
 
-  const editSubtask = (taskId: string, subtaskId: string, newTitle: string) => {
+  const editSubtask = useCallback((taskId: string, subtaskId: string, newTitle: string) => {
     setTasks(prevTasks =>
       prevTasks.map(task => {
         if (task.id === taskId) {
@@ -196,7 +196,7 @@ function App() {
         return task;
       })
     );
-  };
+  }, []);
 
   const deleteTask = (taskId: string) => {
     setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
@@ -350,9 +350,9 @@ function App() {
   };
 
   // New day functionality
-  const handleNewDay = () => {
+  const handleNewDay = useCallback(() => {
     setIsConfirmDialogOpen(true);
-  };
+  }, []);
 
   const confirmNewDay = () => {
     setTasks(prevTasks => 
@@ -371,18 +371,11 @@ function App() {
     setIsConfirmDialogOpen(false);
   };
 
-  const completedTasks = tasks.filter(task => task.completed).length;
-  const totalTasks = tasks.length;
+  // Memoized computed values
+  const completedTasks = useMemo(() => tasks.filter(task => task.completed).length, [tasks]);
+  const totalTasks = useMemo(() => tasks.length, [tasks]);
   
-  // Filter tasks based on completion visibility
-  const getFilteredTasks = (taskType: 'daily' | 'temporary') => {
-    const filteredByType = tasks.filter(task => task.type === taskType);
-    if (showCompletedTasks) {
-      return filteredByType;
-    }
-    return filteredByType.filter(task => !task.completed);
-  };
-
+  // Current date formatting (recomputed each render to stay current)
   const getCurrentDateFormatted = () => {
     const today = new Date();
     const options: Intl.DateTimeFormatOptions = { 
@@ -394,6 +387,19 @@ function App() {
     return today.toLocaleDateString('ru-RU', options);
   };
 
+  // Memoized task filtering
+  const getFilteredTasks = useCallback((taskType: 'daily' | 'temporary') => {
+    const filteredByType = tasks.filter(task => task.type === taskType);
+    if (showCompletedTasks) {
+      return filteredByType;
+    }
+    return filteredByType.filter(task => !task.completed);
+  }, [tasks, showCompletedTasks]);
+
+  // Memoized filtered task lists
+  const dailyTasks = useMemo(() => getFilteredTasks('daily'), [getFilteredTasks]);
+  const temporaryTasks = useMemo(() => getFilteredTasks('temporary'), [getFilteredTasks]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="container mx-auto px-4 py-6 max-w-4xl">
@@ -401,7 +407,7 @@ function App() {
         <ProgressBar completed={completedTasks} total={totalTasks} />
 
         {/* Daily Tasks */}
-        {getFilteredTasks('daily').length > 0 && (
+        {dailyTasks.length > 0 && (
           <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100 mb-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
@@ -415,7 +421,7 @@ function App() {
               )}
             </div>
             <div className="space-y-3">
-              {getFilteredTasks('daily').map(task => (
+              {dailyTasks.map(task => (
                 <TaskItem
                   key={task.id}
                   task={task}
@@ -433,7 +439,7 @@ function App() {
         )}
 
         {/* Temporary Tasks */}
-        {getFilteredTasks('temporary').length > 0 && (
+        {temporaryTasks.length > 0 && (
           <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100 mb-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
@@ -447,7 +453,7 @@ function App() {
               )}
             </div>
             <div className="space-y-3">
-              {getFilteredTasks('temporary').map(task => (
+              {temporaryTasks.map(task => (
                 <TaskItem
                   key={task.id}
                   task={task}
