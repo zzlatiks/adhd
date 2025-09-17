@@ -11,6 +11,8 @@ interface TaskItemProps {
   onDeleteSubtask: (taskId: string, subtaskId: string) => void;
   onEdit: (taskId: string) => void;
   onEditSubtask: (taskId: string, subtaskId: string, newTitle: string) => void;
+  onStartTimer: (taskId: string) => void;
+  onStopTimer: (taskId: string) => void;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({ 
@@ -21,7 +23,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onAddSubtask, 
   onDeleteSubtask,
   onEdit,
-  onEditSubtask 
+  onEditSubtask,
+  onStartTimer,
+  onStopTimer 
 }) => {
   const [showSubtasks, setShowSubtasks] = useState(false);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
@@ -70,9 +74,48 @@ const TaskItem: React.FC<TaskItemProps> = ({
     return remainingMinutes > 0 ? `${hours}ч ${remainingMinutes}м` : `${hours}ч`;
   };
 
+  // Calculate current timer value
+  const getCurrentTimerValue = () => {
+    if (!task.isTimerRunning || !task.timerStartTime) {
+      return task.timeSpent || 0;
+    }
+    const now = new Date();
+    const additionalTime = (now.getTime() - task.timerStartTime.getTime()) / (1000 * 60);
+    return (task.timeSpent || 0) + additionalTime;
+  };
+
+  const currentTimeSpent = getCurrentTimerValue();
+  const isOvertime = task.estimatedMinutes && currentTimeSpent > task.estimatedMinutes;
+
+  const formatTimerDisplay = (minutes: number) => {
+    const totalSeconds = Math.floor(Math.abs(minutes) * 60);
+    const displayHours = Math.floor(totalSeconds / 3600);
+    const displayMinutes = Math.floor((totalSeconds % 3600) / 60);
+    const displaySeconds = totalSeconds % 60;
+    
+    const timeString = displayHours > 0 
+      ? `${displayHours}:${displayMinutes.toString().padStart(2, '0')}:${displaySeconds.toString().padStart(2, '0')}`
+      : `${displayMinutes}:${displaySeconds.toString().padStart(2, '0')}`;
+    
+    // Add minus sign for overtime
+    return minutes < 0 ? `-${timeString}` : timeString;
+  };
+
+  // Calculate remaining time for countdown
+  const getRemainingTime = () => {
+    if (!task.estimatedMinutes) return 0;
+    return task.estimatedMinutes - currentTimeSpent;
+  };
+
+  const remainingTime = getRemainingTime();
+
   return (
-    <div className={`rounded-xl border-2 border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden ${
-      isMainTaskCompleted ? 'bg-green-50 border-green-200' : 'bg-white'
+    <div className={`rounded-xl border-2 shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden ${
+      isMainTaskCompleted 
+        ? 'bg-green-50 border-green-200' 
+        : isOvertime 
+          ? 'bg-red-50 border-red-300' 
+          : 'bg-white border-gray-200'
     }`}>
       <div className="flex items-center p-4 transition-all duration-300 relative">
         <button
@@ -99,14 +142,24 @@ const TaskItem: React.FC<TaskItemProps> = ({
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <span className={`text-lg font-semibold transition-all duration-300 ${
-                isMainTaskCompleted ? 'text-green-700 line-through' : 'text-gray-800'
+                isMainTaskCompleted ? 'text-green-700 line-through' : isOvertime ? 'text-red-700' : 'text-gray-800'
               }`}>
                 {task.title}
               </span>
               {task.estimatedMinutes && (
-                <span className="text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
+                <span className={`text-sm px-2 py-1 rounded-full font-medium ${
+                  isOvertime ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
+                }`}>
                   <Icon name="Clock" size={14} className="inline mr-1" />
                   {formatTime(task.estimatedMinutes)}
+                </span>
+              )}
+              {task.estimatedMinutes && (
+                <span className={`text-sm px-2 py-1 rounded-full font-medium ${
+                  isOvertime ? 'bg-red-200 text-red-800' : task.isTimerRunning ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                }`}>
+                  <Icon name="Clock" size={14} className="inline mr-1" />
+                  {formatTimerDisplay(remainingTime)}
                 </span>
               )}
             </div>
@@ -134,6 +187,20 @@ const TaskItem: React.FC<TaskItemProps> = ({
           >
             <Icon name="Plus" size={16} />
           </button>
+          
+          {task.estimatedMinutes && (
+            <button
+              onClick={() => task.isTimerRunning ? onStopTimer(task.id) : onStartTimer(task.id)}
+              className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                task.isTimerRunning 
+                  ? 'bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700' 
+                  : 'bg-green-100 text-green-600 hover:bg-green-200 hover:text-green-700'
+              }`}
+              title={task.isTimerRunning ? 'Остановить таймер' : 'Запустить таймер'}
+            >
+              <Icon name={task.isTimerRunning ? "X" : "Clock"} size={14} />
+            </button>
+          )}
           
           <button
             onClick={() => onEdit(task.id)}

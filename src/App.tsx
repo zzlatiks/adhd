@@ -70,6 +70,8 @@ function App() {
   const [showCompletedTasks, setShowCompletedTasks] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   // Calculate progress for tasks with subtasks
   const calculateProgress = (task: Task): number => {
@@ -97,6 +99,9 @@ function App() {
       const parsedTasks = JSON.parse(savedTasks).map((task: any) => ({
         ...task,
         createdAt: new Date(task.createdAt),
+        timerStartTime: task.timerStartTime ? new Date(task.timerStartTime) : undefined,
+        // Reset running timers on reload to avoid stale state
+        isTimerRunning: false,
         subtasks: task.subtasks?.map((subtask: any) => ({
           ...subtask,
           createdAt: new Date(subtask.createdAt)
@@ -381,6 +386,110 @@ function App() {
     setIsConfirmDialogOpen(false);
   };
 
+  // Drag and drop handlers
+  const handleDragStart = (taskId: string) => {
+    setDraggedTaskId(taskId);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    setDragOverIndex(index);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverIndex(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    
+    if (!draggedTaskId) return;
+    
+    const draggedIndex = allTasks.findIndex(task => task.id === draggedTaskId);
+    if (draggedIndex === -1 || draggedIndex === targetIndex) {
+      setDraggedTaskId(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    // Get the target task ID from the visible list
+    const targetTaskId = allTasks[targetIndex]?.id;
+    if (!targetTaskId) {
+      setDraggedTaskId(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    // Reorder in the full tasks array without losing hidden tasks
+    setTasks(prevTasks => {
+      const newTasks = [...prevTasks];
+      const fullDraggedIndex = newTasks.findIndex(task => task.id === draggedTaskId);
+      const fullTargetIndex = newTasks.findIndex(task => task.id === targetTaskId);
+      
+      if (fullDraggedIndex === -1 || fullTargetIndex === -1) return prevTasks;
+      
+      // Move dragged task to target position
+      const [draggedTask] = newTasks.splice(fullDraggedIndex, 1);
+      newTasks.splice(fullTargetIndex, 0, draggedTask);
+      
+      return newTasks;
+    });
+    
+    setDraggedTaskId(null);
+    setDragOverIndex(null);
+  };
+
+  // Timer handlers
+  const startTimer = useCallback((taskId: string) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === taskId
+          ? {
+              ...task,
+              isTimerRunning: true,
+              timerStartTime: new Date(),
+              timeSpent: task.timeSpent || 0
+            }
+          : task
+      )
+    );
+  }, []);
+
+  const stopTimer = useCallback((taskId: string) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task => {
+        if (task.id === taskId && task.isTimerRunning && task.timerStartTime) {
+          const now = new Date();
+          const additionalTime = (now.getTime() - task.timerStartTime.getTime()) / (1000 * 60); // Convert to minutes
+          return {
+            ...task,
+            isTimerRunning: false,
+            timerStartTime: undefined,
+            timeSpent: (task.timeSpent || 0) + additionalTime
+          };
+        }
+        return task;
+      })
+    );
+  }, []);
+
+  // Auto-update timers every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTasks(prevTasks =>
+        prevTasks.map(task => {
+          if (task.isTimerRunning && task.timerStartTime) {
+            // Force re-render to update display
+            return { ...task };
+          }
+          return task;
+        })
+      );
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Memoized computed values
   const completedTasks = useMemo(() => tasks.filter(task => task.completed).length, [tasks]);
   const totalTasks = useMemo(() => tasks.length, [tasks]);
@@ -463,10 +572,21 @@ function App() {
             </div>
             
             <div className="space-y-3">
-              {allTasks.map(task => (
+              {allTasks.map((task, index) => (
                 <div
                   key={task.id}
-                  className={task.type === 'temporary' ? 'border-2 border-green-400 rounded-xl p-1' : ''}
+                  draggable="true"
+                  onDragStart={() => handleDragStart(task.id)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDragLeave={handleDragLeave}
+                  onDrop={(e) => handleDrop(e, index)}
+                  className={`cursor-move transition-all duration-200 ${
+                    task.type === 'temporary' ? 'border-2 border-green-400 rounded-xl p-1' : ''
+                  } ${
+                    dragOverIndex === index ? 'scale-105 shadow-xl' : ''
+                  } ${
+                    draggedTaskId === task.id ? 'opacity-50' : ''
+                  }`}
                 >
                   <TaskItem
                     task={task}
@@ -477,6 +597,8 @@ function App() {
                     onDeleteSubtask={deleteSubtask}
                     onEdit={handleEditTask}
                     onEditSubtask={editSubtask}
+                    onStartTimer={startTimer}
+                    onStopTimer={stopTimer}
                   />
                 </div>
               ))}

@@ -15,4 +15,7 @@ export interface Task {
   subtasks: Subtask[];
   estimatedMinutes?: number;
   progress?: number; // 0-100 based on subtask completion
+  timerStartTime?: Date; // When timer was started
+  isTimerRunning?: boolean; // Whether timer is currently running
+  timeSpent?: number; // Time spent in minutes
 }
