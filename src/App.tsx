@@ -116,6 +116,14 @@ function App() {
     localStorage.setItem('adhd-tasks', JSON.stringify(tasks));
   }, [tasks]);
 
+  // Temporary function to get current tasks (for saving as default)
+  (window as any).getCurrentTasks = () => {
+    const currentTasks = JSON.parse(localStorage.getItem('adhd-tasks') || '[]');
+    console.log('Current tasks for saving as default:');
+    console.log(JSON.stringify(currentTasks, null, 2));
+    return currentTasks;
+  };
+
   const toggleTask = useCallback((taskId: string) => {
     setTasks(prevTasks =>
       prevTasks.map(task =>
