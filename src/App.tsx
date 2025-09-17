@@ -515,36 +515,36 @@ function App() {
 
         {/* Header */}
         <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100 mb-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-end justify-between">
             <button
               onClick={handleNewDay}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-4 h-12 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
             >
-              <Icon name="RefreshCw" size={24} className="mr-2" />
+              <Icon name="RefreshCw" size={20} className="mr-2" />
               Новый день
             </button>
             
-            <div className="flex gap-4 flex-wrap items-center">
-              {/* Блок малых кнопок управления */}
+            <div className="flex gap-4 flex-wrap items-end">
+              {/* Блок кнопок управления */}
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowCompletedTasks(!showCompletedTasks)}
-                  className="px-2 py-1 rounded-lg flex items-center transition-all duration-200 transform hover:scale-105 shadow bg-gray-500 hover:bg-gray-600 text-white text-sm"
+                  className="px-3 h-12 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg bg-gray-500 hover:bg-gray-600 text-white font-semibold"
                   title={showCompletedTasks ? 'Скрыть выполненные' : 'Показать выполненные'}
                 >
-                  <Icon name={showCompletedTasks ? "Eye" : "EyeOff"} size={16} />
+                  <Icon name={showCompletedTasks ? "Eye" : "EyeOff"} size={20} />
                 </button>
                 
                 <button
                   onClick={exportTasks}
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 rounded-lg flex items-center transition-all duration-200 transform hover:scale-105 shadow text-sm"
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-3 h-12 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
                   title="Экспорт задач"
                 >
-                  <Icon name="Upload" size={16} />
+                  <Icon name="Upload" size={20} />
                 </button>
                 
-                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-2 py-1 rounded-lg flex items-center transition-all duration-200 transform hover:scale-105 shadow cursor-pointer text-sm" title="Импорт задач">
-                  <Icon name="Download" size={16} />
+                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-3 h-12 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer font-semibold" title="Импорт задач">
+                  <Icon name="Download" size={20} />
                   <input
                     type="file"
                     accept=".json"
@@ -557,10 +557,10 @@ function App() {
               {/* Кнопка добавления задачи */}
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-5 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 h-14 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
                 title="Добавить задачу"
               >
-                <Icon name="Plus" size={28} />
+                <Icon name="Plus" size={32} />
               </button>
             </div>
           </div>

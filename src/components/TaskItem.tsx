@@ -166,9 +166,13 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 {task.title}
               </span>
               {task.estimatedMinutes && (
-                <span className={`text-sm px-2 py-1 rounded-full font-medium ${
-                  getTimerColor()
-                }`}>
+                <span 
+                  onClick={() => task.isTimerRunning ? onStopTimer(task.id) : onStartTimer(task.id)}
+                  className={`text-sm px-2 py-1 rounded-full font-medium cursor-pointer transition-all duration-200 hover:scale-105 ${
+                    getTimerColor()
+                  }`}
+                  title={task.isTimerRunning ? 'Остановить таймер' : 'Запустить таймер'}
+                >
                   <Icon name="Clock" size={14} className="inline mr-1" />
                   {formatTimerDisplay(remainingTime)}
                 </span>
@@ -199,19 +203,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
             <Icon name="Plus" size={16} />
           </button>
           
-          {task.estimatedMinutes && (
-            <button
-              onClick={() => task.isTimerRunning ? onStopTimer(task.id) : onStartTimer(task.id)}
-              className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
-                task.isTimerRunning 
-                  ? 'bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700' 
-                  : 'bg-green-100 text-green-600 hover:bg-green-200 hover:text-green-700'
-              }`}
-              title={task.isTimerRunning ? 'Остановить таймер' : 'Запустить таймер'}
-            >
-              <Icon name={task.isTimerRunning ? "X" : "Clock"} size={14} />
-            </button>
-          )}
           
           <button
             onClick={() => onEdit(task.id)}
