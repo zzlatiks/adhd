@@ -181,6 +181,23 @@ function App() {
     );
   };
 
+  const editSubtask = (taskId: string, subtaskId: string, newTitle: string) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task => {
+        if (task.id === taskId) {
+          const updatedSubtasks = task.subtasks.map(subtask =>
+            subtask.id === subtaskId ? { ...subtask, title: newTitle } : subtask
+          );
+          return {
+            ...task,
+            subtasks: updatedSubtasks
+          };
+        }
+        return task;
+      })
+    );
+  };
+
   const deleteTask = (taskId: string) => {
     setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
   };
@@ -336,6 +353,7 @@ function App() {
                   onAddSubtask={addSubtask}
                   onDeleteSubtask={deleteSubtask}
                   onEdit={handleEditTask}
+                  onEditSubtask={editSubtask}
                 />
               ))}
             </div>
@@ -367,6 +385,7 @@ function App() {
                   onAddSubtask={addSubtask}
                   onDeleteSubtask={deleteSubtask}
                   onEdit={handleEditTask}
+                  onEditSubtask={editSubtask}
                 />
               ))}
             </div>

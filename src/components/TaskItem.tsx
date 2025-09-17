@@ -10,6 +10,7 @@ interface TaskItemProps {
   onAddSubtask: (taskId: string, subtaskTitle: string) => void;
   onDeleteSubtask: (taskId: string, subtaskId: string) => void;
   onEdit: (taskId: string) => void;
+  onEditSubtask: (taskId: string, subtaskId: string, newTitle: string) => void;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({ 
@@ -19,11 +20,14 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onToggleSubtask, 
   onAddSubtask, 
   onDeleteSubtask,
-  onEdit 
+  onEdit,
+  onEditSubtask 
 }) => {
   const [showSubtasks, setShowSubtasks] = useState(false);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [showAddSubtask, setShowAddSubtask] = useState(false);
+  const [editingSubtaskId, setEditingSubtaskId] = useState<string | null>(null);
+  const [editingSubtaskTitle, setEditingSubtaskTitle] = useState('');
 
   const completedSubtasks = task.subtasks.filter(subtask => subtask.completed).length;
   const hasSubtasks = task.subtasks.length > 0;
@@ -37,6 +41,25 @@ const TaskItem: React.FC<TaskItemProps> = ({
       setNewSubtaskTitle('');
       setShowAddSubtask(false);
     }
+  };
+
+  const handleEditSubtask = (subtaskId: string, currentTitle: string) => {
+    setEditingSubtaskId(subtaskId);
+    setEditingSubtaskTitle(currentTitle);
+  };
+
+  const handleSaveSubtask = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingSubtaskTitle.trim() && editingSubtaskId) {
+      onEditSubtask(task.id, editingSubtaskId, editingSubtaskTitle.trim());
+      setEditingSubtaskId(null);
+      setEditingSubtaskTitle('');
+    }
+  };
+
+  const handleCancelEditSubtask = () => {
+    setEditingSubtaskId(null);
+    setEditingSubtaskTitle('');
   };
 
   const formatTime = (minutes?: number) => {
@@ -172,22 +195,59 @@ const TaskItem: React.FC<TaskItemProps> = ({
                   )}
                 </button>
                 
-                <span
-                  className={`flex-1 text-sm font-medium transition-all duration-200 ${
-                    subtask.completed
-                      ? 'text-green-700 line-through'
-                      : 'text-gray-700'
-                  }`}
-                >
-                  {subtask.title}
-                </span>
-                
-                <button
-                  onClick={() => onDeleteSubtask(task.id, subtask.id)}
-                  className="flex-shrink-0 w-6 h-6 rounded bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600 flex items-center justify-center transition-all duration-200"
-                >
-                  <Icon name="X" size={12} />
-                </button>
+                {editingSubtaskId === subtask.id ? (
+                  <form onSubmit={handleSaveSubtask} className="flex-1 flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={editingSubtaskTitle}
+                      onChange={(e) => setEditingSubtaskTitle(e.target.value)}
+                      className="flex-1 p-1 border border-gray-300 rounded text-sm focus:border-blue-400 focus:outline-none"
+                      autoFocus
+                    />
+                    <button
+                      type="submit"
+                      className="w-6 h-6 rounded bg-green-100 text-green-600 hover:bg-green-200 flex items-center justify-center transition-all duration-200"
+                      title="Сохранить"
+                    >
+                      <Icon name="Check" size={12} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCancelEditSubtask}
+                      className="w-6 h-6 rounded bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-all duration-200"
+                      title="Отмена"
+                    >
+                      <Icon name="X" size={12} />
+                    </button>
+                  </form>
+                ) : (
+                  <>
+                    <span
+                      className={`flex-1 text-sm font-medium transition-all duration-200 ${
+                        subtask.completed
+                          ? 'text-green-700 line-through'
+                          : 'text-gray-700'
+                      }`}
+                    >
+                      {subtask.title}
+                    </span>
+                    
+                    <button
+                      onClick={() => handleEditSubtask(subtask.id, subtask.title)}
+                      className="flex-shrink-0 w-6 h-6 rounded bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700 flex items-center justify-center transition-all duration-200 mr-1"
+                      title="Редактировать подзадачу"
+                    >
+                      <Icon name="Edit" size={10} />
+                    </button>
+                    
+                    <button
+                      onClick={() => onDeleteSubtask(task.id, subtask.id)}
+                      className="flex-shrink-0 w-6 h-6 rounded bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600 flex items-center justify-center transition-all duration-200"
+                    >
+                      <Icon name="X" size={12} />
+                    </button>
+                  </>
+                )}
               </div>
             ))}
           </div>
