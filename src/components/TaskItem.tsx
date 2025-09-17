@@ -72,17 +72,15 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
   return (
     <div className="bg-white rounded-xl border-2 border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-      <div
-        className={`flex items-center p-4 transition-all duration-300 relative ${
-          isMainTaskCompleted
-            ? 'bg-green-50'
-            : 'bg-white'
-        }`}
-      >
-        {/* Progress Background for subtasks */}
-        {hasSubtasks && progressPercentage > 0 && !isMainTaskCompleted && (
+      <div className="flex items-center p-4 transition-all duration-300 relative bg-white">
+        {/* Progress Background for subtasks - including completed state */}
+        {hasSubtasks && progressPercentage > 0 && (
           <div 
-            className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-blue-100 to-blue-50 transition-all duration-500 rounded-l-xl z-0 pointer-events-none"
+            className={`absolute left-0 top-0 bottom-0 transition-all duration-500 rounded-l-xl z-0 pointer-events-none ${
+              isMainTaskCompleted 
+                ? 'bg-gradient-to-r from-green-100 to-green-50' 
+                : 'bg-gradient-to-r from-blue-100 to-blue-50'
+            }`}
             style={{ width: `${progressPercentage}%` }}
           />
         )}

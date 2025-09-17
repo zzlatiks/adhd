@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sun, CloudSun, Moon, Plus, Check, Circle, Trash2, Star, Trophy, ListTodo, X, CheckCircle2, BookOpen, Utensils, Shirt, Brush as Toothbrush, Gamepad2, Music, Palette, Home, Backpack, Activity, ChevronUp, ChevronDown, Clock } from 'lucide-react';
+import { Sun, CloudSun, Moon, Plus, Check, Circle, Trash2, Star, Trophy, ListTodo, X, CheckCircle2, BookOpen, Utensils, Shirt, Brush as Toothbrush, Gamepad2, Music, Palette, Home, Backpack, Activity, ChevronUp, ChevronDown, Clock, Pencil, Eye, EyeOff, Download, Upload, RefreshCw } from 'lucide-react';
 
 const iconMap = {
   Sun,
@@ -26,7 +26,13 @@ const iconMap = {
   Activity,
   ChevronUp,
   ChevronDown,
-  Clock
+  Clock,
+  Pencil,
+  Eye,
+  EyeOff,
+  Download,
+  Upload,
+  RefreshCw
 };
 
 interface IconProps {
