@@ -1,4 +1,4 @@
-import React, { useState, memo, useMemo, useCallback } from 'react';
+import React, { useState, memo } from 'react';
 import { Task } from '../types';
 import Icon from './Icon';
 
@@ -75,7 +75,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
       <div
         className={`flex items-center p-4 transition-all duration-300 relative ${
           isMainTaskCompleted
-            ? 'bg-green-50 border-green-300'
+            ? 'bg-green-50'
             : 'bg-white'
         }`}
       >
@@ -88,16 +88,12 @@ const TaskItem: React.FC<TaskItemProps> = ({
         )}
         <button
           onClick={() => hasSubtasks ? setShowSubtasks(!showSubtasks) : onToggle(task.id)}
-          className={`flex-shrink-0 w-12 h-12 rounded-full border-3 flex items-center justify-center transition-all duration-300 mr-4 ${
-            isMainTaskCompleted
-              ? 'bg-green-500 border-green-500 text-white transform scale-110'
-              : 'bg-white border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-400'
-          }`}
+          className="flex-shrink-0 w-12 h-12 rounded-full border-3 flex items-center justify-center transition-all duration-300 mr-4 bg-white border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-400"
         >
-          {isMainTaskCompleted ? (
-            <Icon name="Check" size={24} className="animate-bounce" />
-          ) : hasSubtasks ? (
+          {hasSubtasks ? (
             <Icon name={showSubtasks ? "ChevronUp" : "ChevronDown"} size={24} />
+          ) : isMainTaskCompleted ? (
+            <Icon name="Check" size={24} className="text-green-500" />
           ) : (
             <Icon name="Circle" size={24} />
           )}
@@ -109,13 +105,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <span
-                className={`text-lg font-semibold transition-all duration-300 ${
-                  isMainTaskCompleted
-                    ? 'text-green-700 line-through'
-                    : 'text-gray-800'
-                }`}
-              >
+              <span className="text-lg font-semibold transition-all duration-300 text-gray-800">
                 {task.title}
               </span>
               {task.estimatedMinutes && (

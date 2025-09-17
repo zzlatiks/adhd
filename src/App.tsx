@@ -72,7 +72,7 @@ function App() {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [showCompletedTasks, setShowCompletedTasks] = useState(true);
+  const [showCompletedTasks, setShowCompletedTasks] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
