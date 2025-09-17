@@ -1,0 +1,92 @@
+{
+  "tasks": [
+    {
+      "id": "2",
+      "title": "Подготовка к школе",
+      "type": "daily",
+      "icon": "Activity",
+      "createdAt": "2025-09-17T21:18:20.768Z",
+      "subtasks": [
+        {
+          "id": "2-1",
+          "title": "Домашнее задание",
+          "createdAt": "2025-09-17T21:18:20.768Z",
+          "completed": false
+        },
+        {
+          "id": "2-2",
+          "title": "Собрать портфель",
+          "createdAt": "2025-09-17T21:18:20.768Z",
+          "completed": false
+        }
+      ],
+      "isTimerRunning": false,
+      "completed": false
+    },
+    {
+      "id": "5",
+      "title": "Домашние дела",
+      "type": "daily",
+      "icon": "Home",
+      "createdAt": "2025-09-17T21:18:20.768Z",
+      "subtasks": [
+        {
+          "id": "5-1758144690674",
+          "title": "Разобрать посуду",
+          "createdAt": "2025-09-17T21:31:30.674Z",
+          "completed": false
+        },
+        {
+          "id": "5-1758144703747",
+          "title": "Уход за животными",
+          "createdAt": "2025-09-17T21:31:43.747Z",
+          "completed": false
+        }
+      ],
+      "isTimerRunning": false,
+      "completed": false
+    },
+    {
+      "id": "3",
+      "title": "Подготовка ко сну",
+      "type": "daily",
+      "icon": "Moon",
+      "createdAt": "2025-09-17T21:18:20.768Z",
+      "subtasks": [
+        {
+          "id": "3-1758144620964",
+          "title": "Убрать вещи",
+          "createdAt": "2025-09-17T21:30:20.964Z",
+          "completed": false
+        },
+        {
+          "id": "3-1758144627399",
+          "title": "Помыться",
+          "createdAt": "2025-09-17T21:30:27.399Z",
+          "completed": false
+        },
+        {
+          "id": "3-1758144634332",
+          "title": "Почистить зубы",
+          "createdAt": "2025-09-17T21:30:34.332Z",
+          "completed": false
+        }
+      ],
+      "estimatedMinutes": 15,
+      "isTimerRunning": false,
+      "completed": false
+    },
+    {
+      "id": "1758144936932",
+      "title": "Тренировка / Занятие",
+      "type": "temporary",
+      "icon": "Shirt",
+      "createdAt": "2025-09-17T21:35:36.932Z",
+      "subtasks": [],
+      "isTimerRunning": false,
+      "completed": false
+    }
+  ],
+  "exportDate": "2025-09-17T21:40:28.367Z",
+  "version": "1.0"
+}

@@ -10,54 +10,49 @@ import Icon from './components/Icon';
 
 const initialTasks: Task[] = [
   {
-    id: '1',
-    title: 'Почистить зубы',
-    type: 'daily',
-    completed: false,
-    icon: 'Toothbrush',
-    createdAt: new Date(),
-    subtasks: []
-  },
-  {
     id: '2',
-    title: 'Сделать зарядку',
+    title: 'Подготовка к школе',
     type: 'daily',
     completed: false,
     icon: 'Activity',
     createdAt: new Date(),
     subtasks: [
-      { id: '2-1', title: 'Разминка 5 минут', completed: false, createdAt: new Date() },
-      { id: '2-2', title: 'Основные упражнения', completed: false, createdAt: new Date() }
-    ]
-  },
-  {
-    id: '3',
-    title: 'Позавтракать',
-    type: 'daily',
-    completed: false,
-    icon: 'Utensils',
-    createdAt: new Date(),
-    subtasks: []
-  },
-  {
-    id: '4',
-    title: 'Сделать домашнее задание',
-    type: 'temporary',
-    completed: false,
-    icon: 'BookOpen',
-    createdAt: new Date(),
-    subtasks: [
-      { id: '4-1', title: 'Математика', completed: false, createdAt: new Date() },
-      { id: '4-2', title: 'Чтение', completed: false, createdAt: new Date() },
-      { id: '4-3', title: 'Письмо', completed: false, createdAt: new Date() }
+      { id: '2-1', title: 'Домашнее задание', completed: false, createdAt: new Date() },
+      { id: '2-2', title: 'Собрать портфель', completed: false, createdAt: new Date() }
     ]
   },
   {
     id: '5',
-    title: 'Убрать игрушки',
+    title: 'Домашние дела',
     type: 'daily',
     completed: false,
     icon: 'Home',
+    createdAt: new Date(),
+    subtasks: [
+      { id: '5-1', title: 'Разобрать посуду', completed: false, createdAt: new Date() },
+      { id: '5-2', title: 'Уход за животными', completed: false, createdAt: new Date() }
+    ]
+  },
+  {
+    id: '3',
+    title: 'Подготовка ко сну',
+    type: 'daily',
+    completed: false,
+    icon: 'Moon',
+    createdAt: new Date(),
+    estimatedMinutes: 15,
+    subtasks: [
+      { id: '3-1', title: 'Убрать вещи', completed: false, createdAt: new Date() },
+      { id: '3-2', title: 'Помыться', completed: false, createdAt: new Date() },
+      { id: '3-3', title: 'Почистить зубы', completed: false, createdAt: new Date() }
+    ]
+  },
+  {
+    id: '4',
+    title: 'Тренировка / Занятие',
+    type: 'temporary',
+    completed: false,
+    icon: 'Shirt',
     createdAt: new Date(),
     subtasks: []
   }
@@ -115,14 +110,6 @@ function App() {
   useEffect(() => {
     localStorage.setItem('adhd-tasks', JSON.stringify(tasks));
   }, [tasks]);
-
-  // Temporary function to get current tasks (for saving as default)
-  (window as any).getCurrentTasks = () => {
-    const currentTasks = JSON.parse(localStorage.getItem('adhd-tasks') || '[]');
-    console.log('Current tasks for saving as default:');
-    console.log(JSON.stringify(currentTasks, null, 2));
-    return currentTasks;
-  };
 
   const toggleTask = useCallback((taskId: string) => {
     setTasks(prevTasks =>
