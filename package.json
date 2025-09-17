@@ -1,3 +1,9 @@
+"scripts": {
+  "dev": "vite --host 0.0.0.0 --port 5000",
+  "build": "vite build", 
+  "start": "vite preview --host 0.0.0.0 --port 5000",
+  "preview": "vite preview"
+}
 {
   "name": "vite-react-typescript-starter",
   "private": true,
