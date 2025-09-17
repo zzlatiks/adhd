@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Task, Subtask } from './types';
 import TaskItem from './components/TaskItem';
 import AddTaskModal from './components/AddTaskModal';
+import EditTaskModal from './components/EditTaskModal';
 import ProgressBar from './components/ProgressBar';
 import Icon from './components/Icon';
 
@@ -72,6 +73,8 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [showCompletedTasks, setShowCompletedTasks] = useState(true);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Calculate progress for tasks with subtasks
   const calculateProgress = (task: Task): number => {
@@ -197,6 +200,24 @@ function App() {
     setTasks(prevTasks => [...prevTasks, newTask]);
   };
 
+  const updateTask = (taskId: string, title: string, type: 'daily' | 'temporary', icon: string, estimatedMinutes?: number) => {
+    setTasks(prevTasks => 
+      prevTasks.map(task => 
+        task.id === taskId 
+          ? { ...task, title, type, icon, estimatedMinutes }
+          : task
+      )
+    );
+  };
+
+  const handleEditTask = (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      setEditingTask(task);
+      setIsEditModalOpen(true);
+    }
+  };
+
   // New day functionality
   const handleNewDay = () => {
     setIsConfirmDialogOpen(true);
@@ -314,6 +335,7 @@ function App() {
                   onToggleSubtask={toggleSubtask}
                   onAddSubtask={addSubtask}
                   onDeleteSubtask={deleteSubtask}
+                  onEdit={handleEditTask}
                 />
               ))}
             </div>
@@ -344,6 +366,7 @@ function App() {
                   onToggleSubtask={toggleSubtask}
                   onAddSubtask={addSubtask}
                   onDeleteSubtask={deleteSubtask}
+                  onEdit={handleEditTask}
                 />
               ))}
             </div>
@@ -374,6 +397,17 @@ function App() {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onAddTask={addTask}
+        />
+
+        {/* Edit Task Modal */}
+        <EditTaskModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingTask(null);
+          }}
+          onUpdateTask={updateTask}
+          task={editingTask}
         />
 
         {/* Confirmation Dialog */}

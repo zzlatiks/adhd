@@ -9,6 +9,7 @@ interface TaskItemProps {
   onToggleSubtask: (taskId: string, subtaskId: string) => void;
   onAddSubtask: (taskId: string, subtaskTitle: string) => void;
   onDeleteSubtask: (taskId: string, subtaskId: string) => void;
+  onEdit: (taskId: string) => void;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({ 
@@ -17,7 +18,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onDelete, 
   onToggleSubtask, 
   onAddSubtask, 
-  onDeleteSubtask 
+  onDeleteSubtask,
+  onEdit 
 }) => {
   const [showSubtasks, setShowSubtasks] = useState(false);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
@@ -123,6 +125,14 @@ const TaskItem: React.FC<TaskItemProps> = ({
             title="Добавить подзадачу"
           >
             <Icon name="Plus" size={16} />
+          </button>
+          
+          <button
+            onClick={() => onEdit(task.id)}
+            className="flex-shrink-0 w-8 h-8 rounded-lg bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700 flex items-center justify-center transition-all duration-200"
+            title="Редактировать задачу"
+          >
+            <Icon name="Edit" size={14} />
           </button>
           
           <button
