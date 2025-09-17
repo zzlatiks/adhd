@@ -524,25 +524,27 @@ function App() {
               Новый день
             </button>
             
-            <div className="flex gap-3 flex-wrap">
-              <button
-                onClick={() => setShowCompletedTasks(!showCompletedTasks)}
-                className="px-4 py-2 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg bg-gray-500 hover:bg-gray-600 text-white font-semibold"
-                title={showCompletedTasks ? 'Скрыть выполненные' : 'Показать выполненные'}
-              >
-                <Icon name={showCompletedTasks ? "Eye" : "EyeOff"} size={20} />
-              </button>
-              
+            <div className="flex gap-4 flex-wrap items-center">
+              {/* Блок малых кнопок управления */}
               <div className="flex gap-2">
                 <button
+                  onClick={() => setShowCompletedTasks(!showCompletedTasks)}
+                  className="px-2 py-1 rounded-lg flex items-center transition-all duration-200 transform hover:scale-105 shadow bg-gray-500 hover:bg-gray-600 text-white text-sm"
+                  title={showCompletedTasks ? 'Скрыть выполненные' : 'Показать выполненные'}
+                >
+                  <Icon name={showCompletedTasks ? "Eye" : "EyeOff"} size={16} />
+                </button>
+                
+                <button
                   onClick={exportTasks}
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 rounded-lg flex items-center transition-all duration-200 transform hover:scale-105 shadow text-sm"
                   title="Экспорт задач"
                 >
-                  <Icon name="Upload" size={20} />
+                  <Icon name="Upload" size={16} />
                 </button>
-                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer font-semibold" title="Импорт задач">
-                  <Icon name="Download" size={20} />
+                
+                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-2 py-1 rounded-lg flex items-center transition-all duration-200 transform hover:scale-105 shadow cursor-pointer text-sm" title="Импорт задач">
+                  <Icon name="Download" size={16} />
                   <input
                     type="file"
                     accept=".json"
@@ -552,6 +554,7 @@ function App() {
                 </label>
               </div>
               
+              {/* Кнопка добавления задачи */}
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-5 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
