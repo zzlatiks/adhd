@@ -238,8 +238,18 @@ function App() {
   // Export/Import functionality
   const exportTasks = () => {
     const tasksToExport = tasks.map(task => {
-      const { progress, ...taskWithoutProgress } = task;
-      return taskWithoutProgress;
+      const { progress, completed, ...taskWithoutProgress } = task;
+      return {
+        ...taskWithoutProgress,
+        completed: false, // Always export as incomplete
+        subtasks: task.subtasks.map(subtask => {
+          const { completed, ...subtaskWithoutCompleted } = subtask;
+          return {
+            ...subtaskWithoutCompleted,
+            completed: false // Always export subtasks as incomplete
+          };
+        })
+      };
     });
     
     const dataToExport = {
@@ -292,7 +302,7 @@ function App() {
         id: taskId,
         title: task.title,
         type: task.type,
-        completed: Boolean(task.completed),
+        completed: false, // Always import as incomplete
         icon: ['BookOpen', 'Utensils', 'Shirt', 'Toothbrush', 'Gamepad2', 'Music', 'Palette', 'Home', 'Backpack', 'Moon', 'Activity', 'Circle'].includes(task.icon) ? task.icon : 'Circle',
         createdAt: task.createdAt ? new Date(task.createdAt) : new Date(),
         subtasks: Array.isArray(task.subtasks) ? task.subtasks.map((subtask: any, subtaskIndex: number) => {
@@ -305,7 +315,7 @@ function App() {
           return {
             id: subtaskId,
             title: subtask.title || 'Без названия',
-            completed: Boolean(subtask.completed),
+            completed: false, // Always import subtasks as incomplete
             createdAt: subtask.createdAt ? new Date(subtask.createdAt) : new Date()
           };
         }) : [],
