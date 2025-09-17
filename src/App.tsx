@@ -16,8 +16,7 @@ const initialTasks: Task[] = [
     completed: false,
     icon: 'Toothbrush',
     createdAt: new Date(),
-    subtasks: [],
-    estimatedMinutes: 3
+    subtasks: []
   },
   {
     id: '2',
@@ -29,8 +28,7 @@ const initialTasks: Task[] = [
     subtasks: [
       { id: '2-1', title: 'Разминка 5 минут', completed: false, createdAt: new Date() },
       { id: '2-2', title: 'Основные упражнения', completed: false, createdAt: new Date() }
-    ],
-    estimatedMinutes: 15
+    ]
   },
   {
     id: '3',
@@ -39,8 +37,7 @@ const initialTasks: Task[] = [
     completed: false,
     icon: 'Utensils',
     createdAt: new Date(),
-    subtasks: [],
-    estimatedMinutes: 20
+    subtasks: []
   },
   {
     id: '4',
@@ -53,8 +50,7 @@ const initialTasks: Task[] = [
       { id: '4-1', title: 'Математика', completed: false, createdAt: new Date() },
       { id: '4-2', title: 'Чтение', completed: false, createdAt: new Date() },
       { id: '4-3', title: 'Письмо', completed: false, createdAt: new Date() }
-    ],
-    estimatedMinutes: 60
+    ]
   },
   {
     id: '5',
@@ -63,8 +59,7 @@ const initialTasks: Task[] = [
     completed: false,
     icon: 'Home',
     createdAt: new Date(),
-    subtasks: [],
-    estimatedMinutes: 10
+    subtasks: []
   }
 ];
 
@@ -423,7 +418,7 @@ function App() {
             <div className="flex gap-3 flex-wrap">
               <button
                 onClick={() => setShowCompletedTasks(!showCompletedTasks)}
-                className="px-3 py-3 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg bg-gray-500 hover:bg-gray-600 text-white"
+                className="px-6 py-3 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg bg-gray-500 hover:bg-gray-600 text-white font-semibold"
                 title={showCompletedTasks ? 'Скрыть выполненные' : 'Показать выполненные'}
               >
                 <Icon name={showCompletedTasks ? "Eye" : "EyeOff"} size={20} />
@@ -432,12 +427,12 @@ function App() {
               <div className="flex gap-2">
                 <button
                   onClick={exportTasks}
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-3 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
                   title="Экспорт задач"
                 >
                   <Icon name="Upload" size={20} />
                 </button>
-                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-3 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer" title="Импорт задач">
+                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer font-semibold" title="Импорт задач">
                   <Icon name="Download" size={20} />
                   <input
                     type="file"

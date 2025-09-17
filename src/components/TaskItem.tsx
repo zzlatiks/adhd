@@ -77,7 +77,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
       <div className="flex items-center p-4 transition-all duration-300 relative">
         <button
           onClick={() => hasSubtasks ? setShowSubtasks(!showSubtasks) : onToggle(task.id)}
-          className="flex-shrink-0 w-12 h-12 rounded-full border-3 flex items-center justify-center transition-all duration-300 mr-4 bg-white border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-400"
+          className={`flex-shrink-0 w-12 h-12 rounded-full border-3 flex items-center justify-center transition-all duration-300 mr-4 ${
+            hasSubtasks 
+              ? 'bg-white border-blue-400 text-blue-500 hover:border-blue-500 hover:text-blue-600' 
+              : 'bg-white border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-400'
+          }`}
         >
           {hasSubtasks ? (
             <Icon name={showSubtasks ? "ChevronUp" : "ChevronDown"} size={24} />
