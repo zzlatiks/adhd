@@ -235,6 +235,120 @@ function App() {
     }
   };
 
+  // Export/Import functionality
+  const exportTasks = () => {
+    const dataToExport = {
+      tasks: tasks,
+      exportDate: new Date().toISOString(),
+      version: '1.0'
+    };
+    
+    const blob = new Blob([JSON.stringify(dataToExport, null, 2)], {
+      type: 'application/json'
+    });
+    
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `adhd-tasks-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const validateImportedTasks = (data: any): Task[] => {
+    if (!Array.isArray(data)) {
+      throw new Error('Данные должны содержать массив задач');
+    }
+    
+    const usedTaskIds = new Set<string>();
+    const currentTime = Date.now();
+    
+    return data.map((task: any, taskIndex: number) => {
+      if (!task.id || !task.title || !task.type) {
+        throw new Error(`Задача #${taskIndex + 1} имеет неправильный формат`);
+      }
+      
+      if (!['daily', 'temporary'].includes(task.type)) {
+        throw new Error(`Задача #${taskIndex + 1} имеет неправильный тип`);
+      }
+      
+      // Ensure unique task ID
+      let taskId = task.id;
+      if (usedTaskIds.has(taskId)) {
+        taskId = `${task.id}-${currentTime}-${taskIndex}`;
+      }
+      usedTaskIds.add(taskId);
+      
+      const usedSubtaskIds = new Set<string>();
+      
+      return {
+        id: taskId,
+        title: task.title,
+        type: task.type,
+        completed: Boolean(task.completed),
+        icon: ['BookOpen', 'Utensils', 'Shirt', 'Toothbrush', 'Gamepad2', 'Music', 'Palette', 'Home', 'Backpack', 'Moon', 'Activity', 'Circle'].includes(task.icon) ? task.icon : 'Circle',
+        createdAt: task.createdAt ? new Date(task.createdAt) : new Date(),
+        subtasks: Array.isArray(task.subtasks) ? task.subtasks.map((subtask: any, subtaskIndex: number) => {
+          let subtaskId = subtask.id || `${taskId}-subtask-${subtaskIndex}`;
+          if (usedSubtaskIds.has(subtaskId)) {
+            subtaskId = `${taskId}-subtask-${currentTime}-${subtaskIndex}`;
+          }
+          usedSubtaskIds.add(subtaskId);
+          
+          return {
+            id: subtaskId,
+            title: subtask.title || 'Без названия',
+            completed: Boolean(subtask.completed),
+            createdAt: subtask.createdAt ? new Date(subtask.createdAt) : new Date()
+          };
+        }) : [],
+        estimatedMinutes: task.estimatedMinutes ? Number(task.estimatedMinutes) : undefined,
+        progress: 0 // Always recalculate progress instead of importing
+      };
+    });
+  };
+
+  const handleImportTasks = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      
+      let tasksToImport: Task[];
+      
+      // Handle different export formats
+      if (data.tasks && Array.isArray(data.tasks)) {
+        // New format with metadata
+        tasksToImport = validateImportedTasks(data.tasks);
+      } else if (Array.isArray(data)) {
+        // Legacy format - just array of tasks
+        tasksToImport = validateImportedTasks(data);
+      } else {
+        throw new Error('Неправильный формат файла');
+      }
+      
+      // Confirm import
+      const confirmImport = window.confirm(
+        `Вы хотите импортировать ${tasksToImport.length} задач? Это заменит все текущие задачи.`
+      );
+      
+      if (confirmImport) {
+        setTasks(tasksToImport);
+        alert(`Успешно импортировано ${tasksToImport.length} задач!`);
+      }
+    } catch (error) {
+      console.error('Import error:', error);
+      alert(`Ошибка импорта: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
+    }
+    
+    // Reset file input
+    event.target.value = '';
+  };
+
   // New day functionality
   const handleNewDay = () => {
     setIsConfirmDialogOpen(true);
@@ -295,7 +409,7 @@ function App() {
               </p>
             </div>
             
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               <button
                 onClick={() => setShowCompletedTasks(!showCompletedTasks)}
                 className={`px-4 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg ${
@@ -307,6 +421,28 @@ function App() {
                 <Icon name={showCompletedTasks ? "EyeOff" : "Eye"} size={20} className="mr-2" />
                 {showCompletedTasks ? 'Скрыть' : 'Показать'}
               </button>
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={exportTasks}
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+                  title="Экспорт задач"
+                >
+                  <Icon name="Download" size={20} className="mr-2" />
+                  Экспорт
+                </button>
+                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer">
+                  <Icon name="Upload" size={20} className="mr-2" />
+                  Импорт
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={handleImportTasks}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+              
               <button
                 onClick={handleNewDay}
                 className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
