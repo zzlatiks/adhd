@@ -71,6 +71,7 @@ function App() {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [showCompletedTasks, setShowCompletedTasks] = useState(true);
 
   // Calculate progress for tasks with subtasks
   const calculateProgress = (task: Task): number => {
@@ -220,6 +221,15 @@ function App() {
 
   const completedTasks = tasks.filter(task => task.completed).length;
   const totalTasks = tasks.length;
+  
+  // Filter tasks based on completion visibility
+  const getFilteredTasks = (taskType: 'daily' | 'temporary') => {
+    const filteredByType = tasks.filter(task => task.type === taskType);
+    if (showCompletedTasks) {
+      return filteredByType;
+    }
+    return filteredByType.filter(task => !task.completed);
+  };
 
   const getCurrentDateFormatted = () => {
     const today = new Date();
@@ -249,6 +259,17 @@ function App() {
             
             <div className="flex gap-3">
               <button
+                onClick={() => setShowCompletedTasks(!showCompletedTasks)}
+                className={`px-4 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg ${
+                  showCompletedTasks 
+                    ? 'bg-gray-500 hover:bg-gray-600 text-white' 
+                    : 'bg-green-500 hover:bg-green-600 text-white'
+                }`}
+              >
+                <Icon name={showCompletedTasks ? "EyeOff" : "Eye"} size={20} className="mr-2" />
+                {showCompletedTasks ? 'Скрыть' : 'Показать'}
+              </button>
+              <button
                 onClick={handleNewDay}
                 className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
               >
@@ -270,14 +291,21 @@ function App() {
         <ProgressBar completed={completedTasks} total={totalTasks} />
 
         {/* Daily Tasks */}
-        {tasks.filter(task => task.type === 'daily').length > 0 && (
+        {getFilteredTasks('daily').length > 0 && (
           <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100 mb-6">
-            <div className="flex items-center mb-4">
-              <Icon name="RotateCcw" size={28} className="text-blue-600 mr-3" />
-              <h2 className="text-xl font-bold text-gray-800">Ежедневные задачи</h2>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <Icon name="RotateCcw" size={28} className="text-blue-600 mr-3" />
+                <h2 className="text-xl font-bold text-gray-800">Ежедневные задачи</h2>
+              </div>
+              {!showCompletedTasks && tasks.filter(task => task.type === 'daily' && task.completed).length > 0 && (
+                <span className="text-sm text-gray-500">
+                  {tasks.filter(task => task.type === 'daily' && task.completed).length} выполненных скрыто
+                </span>
+              )}
             </div>
             <div className="space-y-3">
-              {tasks.filter(task => task.type === 'daily').map(task => (
+              {getFilteredTasks('daily').map(task => (
                 <TaskItem
                   key={task.id}
                   task={task}
@@ -293,14 +321,21 @@ function App() {
         )}
 
         {/* Temporary Tasks */}
-        {tasks.filter(task => task.type === 'temporary').length > 0 && (
+        {getFilteredTasks('temporary').length > 0 && (
           <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100 mb-6">
-            <div className="flex items-center mb-4">
-              <Icon name="Clock" size={28} className="text-green-600 mr-3" />
-              <h2 className="text-xl font-bold text-gray-800">Временные задачи</h2>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <Icon name="Clock" size={28} className="text-green-600 mr-3" />
+                <h2 className="text-xl font-bold text-gray-800">Временные задачи</h2>
+              </div>
+              {!showCompletedTasks && tasks.filter(task => task.type === 'temporary' && task.completed).length > 0 && (
+                <span className="text-sm text-gray-500">
+                  {tasks.filter(task => task.type === 'temporary' && task.completed).length} выполненных скрыто
+                </span>
+              )}
             </div>
             <div className="space-y-3">
-              {tasks.filter(task => task.type === 'temporary').map(task => (
+              {getFilteredTasks('temporary').map(task => (
                 <TaskItem
                   key={task.id}
                   task={task}
