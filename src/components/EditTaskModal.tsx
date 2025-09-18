@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Icon from './Icon';
+import VerticalTimePicker from './VerticalTimePicker';
 import { Task } from '../types';
 
 interface EditTaskModalProps {
@@ -76,55 +77,13 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, onUpdate
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Время выполнения
             </label>
-            {/* Mobile: iPhone-style slider */}
+            {/* Mobile: Vertical iPhone-style time picker */}
             <div className="sm:hidden">
-              <div className="bg-gray-100 rounded-xl p-4 mb-3">
-                <div className="text-center mb-3">
-                  <span className="text-2xl font-bold text-gray-800">
-                    {estimatedMinutes || 0} мин
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="120"
-                  step="5"
-                  value={estimatedMinutes || 0}
-                  onChange={(e) => setEstimatedMinutes(Number(e.target.value))}
-                  className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer slider-thumb"
-                  style={{ ['--value' as any]: `${((estimatedMinutes || 0) / 120) * 100}%` }}
-                />
-                <div className="flex justify-between text-xs text-gray-500 mt-2">
-                  <span>0</span>
-                  <span>30</span>
-                  <span>60</span>
-                  <span>90</span>
-                  <span>120</span>
-                </div>
-              </div>
-              <div className="flex gap-2 mb-4">
-                <button
-                  type="button"
-                  onClick={() => setEstimatedMinutes('')}
-                  className="flex-1 p-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300 transition-colors"
-                >
-                  Сбросить
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setEstimatedMinutes(15)}
-                  className="flex-1 p-2 bg-blue-100 text-blue-700 rounded-lg text-sm hover:bg-blue-200 transition-colors"
-                >
-                  15 мин
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setEstimatedMinutes(30)}
-                  className="flex-1 p-2 bg-blue-100 text-blue-700 rounded-lg text-sm hover:bg-blue-200 transition-colors"
-                >
-                  30 мин
-                </button>
-              </div>
+              <VerticalTimePicker
+                value={estimatedMinutes}
+                onChange={(value) => setEstimatedMinutes(value)}
+                onReset={() => setEstimatedMinutes('')}
+              />
             </div>
             {/* Desktop: Number input */}
             <div className="hidden sm:block">
