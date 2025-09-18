@@ -232,39 +232,72 @@ function App() {
 
   // Export/Import functionality
   const exportTasks = () => {
-    const tasksToExport = tasks.map(task => {
-      const { progress, completed, ...taskWithoutProgress } = task;
-      return {
-        ...taskWithoutProgress,
-        completed: false, // Always export as incomplete
-        subtasks: task.subtasks.map(subtask => {
-          const { completed, ...subtaskWithoutCompleted } = subtask;
-          return {
-            ...subtaskWithoutCompleted,
-            completed: false // Always export subtasks as incomplete
-          };
-        })
+    try {
+      const tasksToExport = tasks.map(task => {
+        const { progress, completed, ...taskWithoutProgress } = task;
+        return {
+          ...taskWithoutProgress,
+          completed: false, // Always export as incomplete
+          subtasks: task.subtasks.map(subtask => {
+            const { completed, ...subtaskWithoutCompleted } = subtask;
+            return {
+              ...subtaskWithoutCompleted,
+              completed: false // Always export subtasks as incomplete
+            };
+          })
+        };
+      });
+      
+      const dataToExport = {
+        tasks: tasksToExport,
+        exportDate: new Date().toISOString(),
+        version: '1.0'
       };
-    });
-    
-    const dataToExport = {
-      tasks: tasksToExport,
-      exportDate: new Date().toISOString(),
-      version: '1.0'
-    };
-    
-    const blob = new Blob([JSON.stringify(dataToExport, null, 2)], {
-      type: 'application/json'
-    });
-    
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `adhd-tasks-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+      
+      console.log('Data prepared for export:', dataToExport);
+      
+      const jsonString = JSON.stringify(dataToExport, null, 2);
+      const blob = new Blob([jsonString], {
+        type: 'application/json'
+      });
+      
+      console.log('Blob created, size:', blob.size);
+      
+      // Проверяем, поддерживается ли скачивание файлов
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      console.log('Device detection:', { isIOS, isMobile });
+      
+      if (isIOS || (isMobile && !('download' in document.createElement('a')))) {
+        // Для iOS и старых мобильных браузеров - открываем в новой вкладке
+        console.log('Using iOS/mobile fallback method');
+        const dataURL = `data:application/json;charset=utf-8,${encodeURIComponent(jsonString)}`;
+        window.open(dataURL, '_blank');
+      } else {
+        // Стандартный метод скачивания
+        console.log('Using standard download method');
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `adhd-tasks-${new Date().toISOString().split('T')[0]}.json`;
+        
+        // Делаем ссылку невидимой
+        link.style.display = 'none';
+        
+        document.body.appendChild(link);
+        console.log('Triggering download click');
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        console.log('Download completed');
+      }
+      
+    } catch (error) {
+      console.error('Export failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
+      alert('Ошибка экспорта: ' + errorMessage);
+    }
   };
 
   const validateImportedTasks = (data: any): Task[] => {
