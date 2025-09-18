@@ -82,7 +82,6 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, onUpdate
               <VerticalTimePicker
                 value={estimatedMinutes}
                 onChange={(value) => setEstimatedMinutes(value)}
-                onReset={() => setEstimatedMinutes('')}
               />
             </div>
             {/* Desktop: Number input */}

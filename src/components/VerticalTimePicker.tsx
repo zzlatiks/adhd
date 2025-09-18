@@ -3,10 +3,9 @@ import React, { useState, useRef, useEffect } from 'react';
 interface VerticalTimePickerProps {
   value: number | '';
   onChange: (value: number) => void;
-  onReset: () => void;
 }
 
-const VerticalTimePicker: React.FC<VerticalTimePickerProps> = ({ value, onChange, onReset }) => {
+const VerticalTimePicker: React.FC<VerticalTimePickerProps> = ({ value, onChange }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
   const [startValue, setStartValue] = useState(0);
@@ -145,38 +144,6 @@ const VerticalTimePicker: React.FC<VerticalTimePickerProps> = ({ value, onChange
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Quick action buttons */}
-      <div className="flex gap-2 mt-4">
-        <button
-          type="button"
-          onClick={onReset}
-          className="flex-1 p-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300 transition-colors"
-        >
-          Сбросить
-        </button>
-        <button
-          type="button"
-          onClick={() => onChange(15)}
-          className="flex-1 p-2 bg-blue-100 text-blue-700 rounded-lg text-sm hover:bg-blue-200 transition-colors"
-        >
-          15 мин
-        </button>
-        <button
-          type="button"
-          onClick={() => onChange(30)}
-          className="flex-1 p-2 bg-blue-100 text-blue-700 rounded-lg text-sm hover:bg-blue-200 transition-colors"
-        >
-          30 мин
-        </button>
-      </div>
-
-      {/* Instructions */}
-      <div className="text-center mt-3">
-        <p className="text-xs text-gray-500">
-          Свайпайте вверх/вниз для изменения времени
-        </p>
       </div>
     </div>
   );

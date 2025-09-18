@@ -70,7 +70,6 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask 
               <VerticalTimePicker
                 value={estimatedMinutes}
                 onChange={(value) => setEstimatedMinutes(value)}
-                onReset={() => setEstimatedMinutes('')}
               />
             </div>
             {/* Desktop: Number input */}
