@@ -140,24 +140,31 @@ function App() {
   }, []);
 
   const addSubtask = useCallback((taskId: string, subtaskTitle: string) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task => {
+    console.log('addSubtask called in App.tsx', { taskId, subtaskTitle });
+    setTasks(prevTasks => {
+      console.log('Current tasks before update:', prevTasks.map(t => ({ id: t.id, title: t.title, subtasksCount: t.subtasks.length })));
+      const updatedTasks = prevTasks.map(task => {
         if (task.id === taskId) {
+          console.log('Found matching task:', { id: task.id, title: task.title, currentSubtasks: task.subtasks.length });
           const newSubtask: Subtask = {
             id: `${taskId}-${Date.now()}`,
             title: subtaskTitle,
             completed: false,
             createdAt: new Date()
           };
-          return {
+          const updatedTask = {
             ...task,
             subtasks: [...task.subtasks, newSubtask],
             completed: false
           };
+          console.log('Updated task:', { id: updatedTask.id, subtasksCount: updatedTask.subtasks.length, newSubtask });
+          return updatedTask;
         }
         return task;
-      })
-    );
+      });
+      console.log('Tasks after update:', updatedTasks.map(t => ({ id: t.id, title: t.title, subtasksCount: t.subtasks.length })));
+      return updatedTasks;
+    });
   }, []);
 
   const deleteSubtask = useCallback((taskId: string, subtaskId: string) => {
