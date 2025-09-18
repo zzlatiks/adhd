@@ -7,6 +7,7 @@ This is an ADHD Kids Task Manager application built as a React TypeScript web ap
 - **September 18, 2025 - Latest**: Fixed Safari three-dots menu issue and export functionality:
   - **Safari Menu Fix**: Fixed critical issue where clicking "Delete" in the three-dots menu would pass through to elements below. Added backdrop overlay and improved event timing to prevent click-through problems in Safari.
   - **Export Restoration**: Reverted export function to standard download method for all browsers, fixing issue where files opened in browser instead of downloading in Yandex Browser and other browsers.
+  - **Mobile Zoom Fix**: Fixed issue where adding subtasks caused page to zoom in by ~10% on mobile devices. Updated viewport meta tag to prevent auto-zoom when focusing on input fields.
   - **Simple Time Selection**: Replaced complex vertical time picker with simple button selection (5, 10, 15, 30 minutes) for easier mobile interaction.
   - **Streamlined Subtask Addition**: Removed green checkmark button for subtask addition - now using Enter key only for cleaner interface.
 
