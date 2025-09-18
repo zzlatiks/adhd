@@ -74,8 +74,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
   };
 
   const handleAddSubtask = (e: React.FormEvent) => {
+    console.log('handleAddSubtask called from form submit');
     e.preventDefault();
     if (newSubtaskTitle.trim()) {
+      console.log('Adding subtask via form:', newSubtaskTitle.trim());
       onAddSubtask(task.id, newSubtaskTitle.trim());
       setNewSubtaskTitle('');
       setShowAddSubtask(false);
@@ -442,6 +444,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
             />
             <button
               type="submit"
+              onClick={() => console.log('Green checkmark clicked! Button disabled?', !newSubtaskTitle.trim())}
               className="w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] min-h-[44px] rounded bg-green-100 text-green-600 hover:bg-green-200 flex items-center justify-center transition-all duration-200 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!newSubtaskTitle.trim()}
               title="Добавить"
