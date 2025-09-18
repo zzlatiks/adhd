@@ -5,7 +5,7 @@ import { Task } from '../types';
 interface EditTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpdateTask: (taskId: string, title: string, type: 'daily' | 'temporary', icon: string, estimatedMinutes?: number) => void;
+  onUpdateTask: (taskId: string, title: string, icon: string, estimatedMinutes?: number) => void;
   task: Task | null;
 }
 
@@ -16,7 +16,6 @@ const taskIcons = [
 
 const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, onUpdateTask, task }) => {
   const [title, setTitle] = useState('');
-  const [taskType, setTaskType] = useState<'daily' | 'temporary'>('daily');
   const [selectedIcon, setSelectedIcon] = useState('Circle');
   const [estimatedMinutes, setEstimatedMinutes] = useState<number | ''>('');
 
@@ -24,7 +23,6 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, onUpdate
   useEffect(() => {
     if (task) {
       setTitle(task.title);
-      setTaskType(task.type);
       setSelectedIcon(task.icon);
       setEstimatedMinutes(task.estimatedMinutes || '');
     }
@@ -34,7 +32,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, onUpdate
     e.preventDefault();
     if (title.trim() && task) {
       const minutes = estimatedMinutes === '' ? undefined : Number(estimatedMinutes);
-      onUpdateTask(task.id, title.trim(), taskType, selectedIcon, minutes);
+      onUpdateTask(task.id, title.trim(), selectedIcon, minutes);
       onClose();
     }
   };
@@ -73,30 +71,6 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, onUpdate
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Тип задачи
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { value: 'daily', label: 'Ежедневная', color: 'bg-blue-100 text-blue-700' },
-                { value: 'temporary', label: 'Временная', color: 'bg-green-100 text-green-700' }
-              ].map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => setTaskType(option.value as 'daily' | 'temporary')}
-                  className={`p-3 rounded-xl font-semibold transition-all ${
-                    taskType === option.value
-                      ? option.color + ' ring-2 ring-offset-2 ring-current'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">

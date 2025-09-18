@@ -8,7 +8,6 @@ export interface Subtask {
 export interface Task {
   id: string;
   title: string;
-  type: 'temporary' | 'daily';
   completed: boolean;
   icon: string;
   createdAt: Date;

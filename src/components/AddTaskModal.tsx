@@ -4,7 +4,7 @@ import Icon from './Icon';
 interface AddTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddTask: (title: string, type: 'daily' | 'temporary', icon: string, estimatedMinutes?: number) => void;
+  onAddTask: (title: string, icon: string, estimatedMinutes?: number) => void;
 }
 
 const taskIcons = [
@@ -14,7 +14,6 @@ const taskIcons = [
 
 const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask }) => {
   const [title, setTitle] = useState('');
-  const [taskType, setTaskType] = useState<'daily' | 'temporary'>('daily');
   const [selectedIcon, setSelectedIcon] = useState('Circle');
   const [estimatedMinutes, setEstimatedMinutes] = useState<number | ''>('');
 
@@ -22,7 +21,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask 
     e.preventDefault();
     if (title.trim()) {
       const minutes = estimatedMinutes === '' ? undefined : Number(estimatedMinutes);
-      onAddTask(title.trim(), taskType, selectedIcon, minutes);
+      onAddTask(title.trim(), selectedIcon, minutes);
       setTitle('');
       setSelectedIcon('Circle');
       setEstimatedMinutes('');
@@ -60,30 +59,6 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask 
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Тип задачи
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { value: 'daily', label: 'Ежедневная', color: 'bg-blue-100 text-blue-700' },
-                { value: 'temporary', label: 'Временная', color: 'bg-green-100 text-green-700' }
-              ].map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => setTaskType(option.value as 'daily' | 'temporary')}
-                  className={`p-3 rounded-xl font-semibold transition-all ${
-                    taskType === option.value
-                      ? option.color + ' ring-2 ring-offset-2 ring-current'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">

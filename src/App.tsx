@@ -13,7 +13,6 @@ const initialTasks: Task[] = [
   {
     id: '2',
     title: 'Подготовка к школе',
-    type: 'daily',
     completed: false,
     icon: 'Activity',
     createdAt: new Date(),
@@ -25,7 +24,6 @@ const initialTasks: Task[] = [
   {
     id: '5',
     title: 'Домашние дела',
-    type: 'daily',
     completed: false,
     icon: 'Home',
     createdAt: new Date(),
@@ -37,7 +35,6 @@ const initialTasks: Task[] = [
   {
     id: '3',
     title: 'Подготовка ко сну',
-    type: 'daily',
     completed: false,
     icon: 'Moon',
     createdAt: new Date(),
@@ -51,7 +48,6 @@ const initialTasks: Task[] = [
   {
     id: '4',
     title: 'Тренировка / Занятие',
-    type: 'temporary',
     completed: false,
     icon: 'Shirt',
     createdAt: new Date(),
@@ -202,11 +198,10 @@ function App() {
     setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
   };
 
-  const addTask = (title: string, type: 'daily' | 'temporary', icon: string, estimatedMinutes?: number) => {
+  const addTask = (title: string, icon: string, estimatedMinutes?: number) => {
     const newTask: Task = {
       id: Date.now().toString(),
       title,
-      type,
       completed: false,
       icon,
       createdAt: new Date(),
@@ -217,11 +212,11 @@ function App() {
     setTasks(prevTasks => [...prevTasks, newTask]);
   };
 
-  const updateTask = (taskId: string, title: string, type: 'daily' | 'temporary', icon: string, estimatedMinutes?: number) => {
+  const updateTask = (taskId: string, title: string, icon: string, estimatedMinutes?: number) => {
     setTasks(prevTasks => 
       prevTasks.map(task => 
         task.id === taskId 
-          ? { ...task, title, type, icon, estimatedMinutes }
+          ? { ...task, title, icon, estimatedMinutes }
           : task
       )
     );
@@ -281,12 +276,8 @@ function App() {
     const currentTime = Date.now();
     
     return data.map((task: any, taskIndex: number) => {
-      if (!task.id || !task.title || !task.type) {
+      if (!task.id || !task.title) {
         throw new Error(`Задача #${taskIndex + 1} имеет неправильный формат`);
-      }
-      
-      if (!['daily', 'temporary'].includes(task.type)) {
-        throw new Error(`Задача #${taskIndex + 1} имеет неправильный тип`);
       }
       
       // Ensure unique task ID
@@ -301,7 +292,6 @@ function App() {
       return {
         id: taskId,
         title: task.title,
-        type: task.type,
         completed: false, // Always import as incomplete
         icon: ['BookOpen', 'Utensils', 'Shirt', 'Toothbrush', 'Gamepad2', 'Music', 'Palette', 'Home', 'Backpack', 'Moon', 'Activity', 'Circle'].includes(task.icon) ? task.icon : 'Circle',
         createdAt: task.createdAt ? new Date(task.createdAt) : new Date(),
@@ -372,7 +362,6 @@ function App() {
   const confirmNewDay = () => {
     setTasks(prevTasks => 
       prevTasks
-        .filter(task => task.type === 'daily') // Keep only daily tasks
         .map(task => ({
           ...task,
           completed: false, // Reset completion status
@@ -594,18 +583,12 @@ function App() {
   
 
   // Memoized task filtering
-  const getFilteredTasks = useCallback((taskType: 'daily' | 'temporary') => {
-    const filteredByType = tasks.filter(task => task.type === taskType);
+  const allTasks = useMemo(() => {
     if (showCompletedTasks) {
-      return filteredByType;
+      return tasks;
     }
-    return filteredByType.filter(task => !task.completed);
+    return tasks.filter(task => !task.completed);
   }, [tasks, showCompletedTasks]);
-
-  // Memoized filtered task lists
-  const dailyTasks = useMemo(() => getFilteredTasks('daily'), [getFilteredTasks]);
-  const temporaryTasks = useMemo(() => getFilteredTasks('temporary'), [getFilteredTasks]);
-  const allTasks = useMemo(() => [...dailyTasks, ...temporaryTasks], [dailyTasks, temporaryTasks]);
 
 
   return (
@@ -635,8 +618,6 @@ function App() {
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
                   className={`cursor-move touch-pan-y transition-all duration-200 ${
-                    task.type === 'temporary' ? 'border-2 border-green-400 rounded-xl p-1' : ''
-                  } ${
                     dragOverIndex === index ? 'scale-105 shadow-xl' : ''
                   } ${
                     draggedTaskId === task.id ? (isTouchDragging ? 'opacity-70 scale-105' : 'opacity-50') : ''
