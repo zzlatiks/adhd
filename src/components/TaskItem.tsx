@@ -32,11 +32,47 @@ const TaskItem: React.FC<TaskItemProps> = ({
   const [showAddSubtask, setShowAddSubtask] = useState(false);
   const [editingSubtaskId, setEditingSubtaskId] = useState<string | null>(null);
   const [editingSubtaskTitle, setEditingSubtaskTitle] = useState('');
+  const [showActionsMenu, setShowActionsMenu] = useState(false);
 
-  const completedSubtasks = task.subtasks.filter(subtask => subtask.completed).length;
+  // Закрываем меню при клике вне его
+  React.useEffect(() => {
+    const handleClickOutside = () => {
+      if (showActionsMenu) {
+        setShowActionsMenu(false);
+      }
+    };
+
+    if (showActionsMenu) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [showActionsMenu]);
+
   const hasSubtasks = task.subtasks.length > 0;
   const isMainTaskCompleted = hasSubtasks ? task.subtasks.every(s => s.completed) : task.completed;
   const progressPercentage = task.progress || 0;
+
+  // Функция для получения цвета задачи на основе хеша от ID
+  const getTaskColor = () => {
+    const colors = [
+      'border-blue-200 bg-blue-50',
+      'border-green-200 bg-green-50', 
+      'border-purple-200 bg-purple-50',
+      'border-pink-200 bg-pink-50',
+      'border-yellow-200 bg-yellow-50',
+      'border-indigo-200 bg-indigo-50',
+      'border-orange-200 bg-orange-50',
+      'border-teal-200 bg-teal-50'
+    ];
+    const hash = task.id.split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a;
+    }, 0);
+    return colors[Math.abs(hash) % colors.length];
+  };
 
   const handleAddSubtask = (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,33 +170,45 @@ const TaskItem: React.FC<TaskItemProps> = ({
         ? 'bg-green-50 border-green-200' 
         : isOvertime 
           ? 'bg-red-50 border-red-300' 
-          : 'bg-white border-gray-200'
+          : getTaskColor()
     }`}>
       <div className="flex items-center p-2 sm:p-4 transition-all duration-300 relative">
-        <button
-          onClick={() => hasSubtasks ? setShowSubtasks(!showSubtasks) : onToggle(task.id)}
-          className={`flex-shrink-0 w-6 sm:w-14 h-6 sm:h-14 min-w-[24px] sm:min-w-[56px] rounded-full border-2 sm:border-3 flex items-center justify-center transition-all duration-300 mr-1 sm:mr-4 ${
-            hasSubtasks 
-              ? 'bg-white border-blue-500 text-blue-500 hover:border-blue-600 hover:text-blue-600' 
-              : 'bg-white border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-400'
-          }`}
-          data-testid={`button-toggle-${task.id}`}
-        >
-          {hasSubtasks ? (
-            <Icon name={showSubtasks ? "ChevronUp" : "ChevronDown"} size={12} className="sm:size-6" />
-          ) : isMainTaskCompleted ? (
-            <Icon name="Check" size={12} className="text-green-500 sm:size-6" />
-          ) : (
-            <Icon name="Circle" size={12} className="sm:size-6" />
-          )}
-        </button>
+        {hasSubtasks ? (
+          <button
+            onClick={() => setShowSubtasks(!showSubtasks)}
+            className="flex-shrink-0 w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] sm:min-w-[48px] rounded-lg bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100 hover:border-blue-300 flex items-center justify-center transition-all duration-300 mr-1 sm:mr-4"
+            data-testid={`button-expand-${task.id}`}
+            title={showSubtasks ? 'Скрыть подзадачи' : 'Показать подзадачи'}
+          >
+            <Icon name={showSubtasks ? "ChevronUp" : "ChevronDown"} size={12} className="sm:size-4" />
+          </button>
+        ) : (
+          <button
+            onClick={() => onToggle(task.id)}
+            className={`flex-shrink-0 w-11 sm:w-14 h-11 sm:h-14 min-w-[44px] sm:min-w-[56px] rounded-full border-2 sm:border-3 flex items-center justify-center transition-all duration-300 mr-1 sm:mr-4 ${
+              isMainTaskCompleted 
+                ? 'bg-green-500 border-green-500 text-white' 
+                : 'bg-white border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-400'
+            }`}
+            data-testid={`button-toggle-${task.id}`}
+          >
+            {isMainTaskCompleted ? (
+              <Icon name="Check" size={12} className="text-white sm:size-6" />
+            ) : (
+              <Icon name="Circle" size={12} className="sm:size-6" />
+            )}
+          </button>
+        )}
 
         <div className="flex-1 flex items-center">
           <div className="hidden sm:block mr-3 text-blue-500">
             <Icon name={task.icon} size={28} />
           </div>
           <div className="flex-1">
-            <div className="flex items-center gap-2">
+            <div 
+              className={`flex items-center gap-2 ${hasSubtasks ? 'cursor-pointer' : ''}`}
+              onClick={hasSubtasks ? () => setShowSubtasks(!showSubtasks) : undefined}
+            >
               <span className={`text-sm sm:text-lg font-semibold transition-all duration-300 ${
                 isMainTaskCompleted ? 'text-green-700 line-through' : isOvertime ? 'text-red-700' : 'text-gray-800'
               }`}>
@@ -171,48 +219,71 @@ const TaskItem: React.FC<TaskItemProps> = ({
         </div>
 
         <div className="flex flex-col gap-1 sm:gap-2">
-          {/* Верхняя строка: время и плюс */}
-          <div className="flex items-center gap-1 sm:gap-2">
-            {task.estimatedMinutes && (
+          {/* Верхняя строка: время (занимает 2 места если есть) */}
+          {task.estimatedMinutes && (
+            <div className="flex items-center">
               <span 
                 onClick={() => task.isTimerRunning ? onStopTimer(task.id) : onStartTimer(task.id)}
-                className={`flex-shrink-0 w-7 sm:w-12 h-7 sm:h-12 min-w-[28px] sm:min-w-[48px] rounded-lg text-xs sm:text-sm px-1 sm:px-2 py-0.5 sm:py-1 font-medium cursor-pointer transition-all duration-200 hover:scale-105 flex items-center justify-center ${
+                className={`flex-shrink-0 w-full h-11 sm:h-12 min-h-[44px] sm:min-h-[48px] rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 font-medium cursor-pointer transition-all duration-200 hover:scale-105 flex items-center justify-center ${
                   getTimerColor()
                 }`}
                 title={task.isTimerRunning ? 'Остановить таймер' : 'Запустить таймер'}
               >
-                <Icon name="Clock" size={14} className="mr-0.5 sm:mr-1" />
+                <Icon name="Clock" size={14} className="mr-1 sm:mr-2" />
                 <span className="text-xs sm:text-sm">{formatTimerDisplay(remainingTime)}</span>
               </span>
-            )}
+            </div>
+          )}
+          
+          {/* Нижняя строка: + и ⋮ */}
+          <div className="flex items-center gap-1 sm:gap-2">
             <button
               onClick={() => setShowAddSubtask(!showAddSubtask)}
-              className="flex-shrink-0 w-7 sm:w-12 h-7 sm:h-12 min-w-[28px] sm:min-w-[48px] rounded-lg bg-blue-100 text-blue-500 hover:bg-blue-200 hover:text-blue-600 flex items-center justify-center transition-all duration-200"
+              className="flex-shrink-0 w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] sm:min-w-[48px] rounded-lg bg-blue-100 text-blue-500 hover:bg-blue-200 hover:text-blue-600 flex items-center justify-center transition-all duration-200"
               title="Добавить подзадачу"
               data-testid={`button-add-subtask-${task.id}`}
             >
               <Icon name="Plus" size={14} className="sm:size-5" />
             </button>
-          </div>
-          
-          {/* Нижняя строка: редактирование и удаление */}
-          <div className="flex items-center gap-1 sm:gap-2">
-            <button
-              onClick={() => onEdit(task.id)}
-              className="flex-shrink-0 w-7 sm:w-12 h-7 sm:h-12 min-w-[28px] sm:min-w-[48px] rounded-lg bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700 flex items-center justify-center transition-all duration-200"
-              title="Редактировать задачу"
-              data-testid={`button-edit-${task.id}`}
-            >
-              <Icon name="Pencil" size={14} className="sm:size-5" />
-            </button>
             
-            <button
-              onClick={() => onDelete(task.id)}
-              className="flex-shrink-0 w-7 sm:w-12 h-7 sm:h-12 min-w-[28px] sm:min-w-[48px] rounded-lg bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600 flex items-center justify-center transition-all duration-200"
-              data-testid={`button-delete-${task.id}`}
-            >
-              <Icon name="Trash2" size={14} className="sm:size-5" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowActionsMenu(!showActionsMenu)}
+                className="flex-shrink-0 w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] sm:min-w-[48px] rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-700 flex items-center justify-center transition-all duration-200"
+                title="Действия"
+                data-testid={`button-actions-${task.id}`}
+              >
+                <Icon name="MoreVertical" size={14} className="sm:size-5" />
+              </button>
+              
+              {/* Выпадающее меню */}
+              {showActionsMenu && (
+                <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[120px]">
+                  <button
+                    onClick={() => {
+                      onEdit(task.id);
+                      setShowActionsMenu(false);
+                    }}
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-gray-700 first:rounded-t-lg"
+                    data-testid={`menu-edit-${task.id}`}
+                  >
+                    <Icon name="Pencil" size={14} />
+                    Редактировать
+                  </button>
+                  <button
+                    onClick={() => {
+                      onDelete(task.id);
+                      setShowActionsMenu(false);
+                    }}
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-red-600 last:rounded-b-lg border-t border-gray-100"
+                    data-testid={`menu-delete-${task.id}`}
+                  >
+                    <Icon name="Trash2" size={14} />
+                    Удалить
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -220,9 +291,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
       {/* Progress Section for subtasks - показывается под кнопками управления */}
       {hasSubtasks && (
         <div className="px-2 pb-2 sm:px-4 sm:pb-3">
-          <div className="text-xs sm:text-sm text-gray-600 mb-1">
-            {completedSubtasks} из {task.subtasks.length} подзадач выполнено
-          </div>
           <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2">
             <div 
               className="bg-blue-500 h-1.5 sm:h-2 rounded-full transition-all duration-500"
@@ -247,7 +315,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
               >
                 <button
                   onClick={() => onToggleSubtask(task.id, subtask.id)}
-                  className={`flex-shrink-0 w-8 sm:w-10 h-8 sm:h-10 min-w-[32px] sm:min-w-[40px] rounded-full border-2 flex items-center justify-center transition-all duration-200 mr-2 sm:mr-3 ${
+                  className={`flex-shrink-0 w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] sm:min-w-[48px] rounded-full border-2 flex items-center justify-center transition-all duration-200 mr-2 sm:mr-3 ${
                     subtask.completed
                       ? 'bg-green-500 border-green-500 text-white'
                       : 'bg-white border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-400'
@@ -300,7 +368,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     
                     <button
                       onClick={() => handleEditSubtask(subtask.id, subtask.title)}
-                      className="flex-shrink-0 w-7 sm:w-10 h-7 sm:h-10 min-w-[28px] sm:min-w-[40px] rounded bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700 flex items-center justify-center transition-all duration-200 mr-1"
+                      className="flex-shrink-0 w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] sm:min-w-[48px] rounded bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700 flex items-center justify-center transition-all duration-200 mr-1"
                       title="Редактировать подзадачу"
                       data-testid={`button-edit-subtask-${subtask.id}`}
                     >
@@ -309,7 +377,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     
                     <button
                       onClick={() => onDeleteSubtask(task.id, subtask.id)}
-                      className="flex-shrink-0 w-7 sm:w-10 h-7 sm:h-10 min-w-[28px] sm:min-w-[40px] rounded bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600 flex items-center justify-center transition-all duration-200"
+                      className="flex-shrink-0 w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] sm:min-w-[48px] rounded bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600 flex items-center justify-center transition-all duration-200"
                       data-testid={`button-delete-subtask-${subtask.id}`}
                     >
                       <Icon name="X" size={16} />
