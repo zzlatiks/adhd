@@ -165,13 +165,21 @@ const TaskItem: React.FC<TaskItemProps> = ({
   }, [task.isTimerRunning, task.estimatedMinutes, remainingTime, onStopTimer, task.id]);
 
   return (
-    <div className={`rounded-xl border-2 shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden ${
+    <div 
+      className={`rounded-xl border-2 shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden cursor-pointer ${
       isMainTaskCompleted 
         ? 'bg-green-50 border-green-200' 
         : isOvertime 
           ? 'bg-red-50 border-red-300' 
           : getTaskColor()
-    }`}>
+    }`}
+      onClick={!hasSubtasks ? (e) => {
+        e.preventDefault();
+        // Не переключаем задачу если открыто меню действий или форма добавления подзадач
+        if (showActionsMenu || showAddSubtask) return;
+        onToggle(task.id);
+      } : undefined}
+    >
       <div className="flex items-center p-2 sm:p-4 transition-all duration-300 relative">
         {hasSubtasks ? (
           <button
@@ -183,9 +191,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
             <Icon name={showSubtasks ? "ChevronUp" : "ChevronDown"} size={12} className="sm:size-4" />
           </button>
         ) : (
-          <button
-            onClick={() => onToggle(task.id)}
-            className={`flex-shrink-0 w-11 sm:w-14 h-11 sm:h-14 min-w-[44px] sm:min-w-[56px] rounded-full border-2 sm:border-3 flex items-center justify-center transition-all duration-300 mr-1 sm:mr-4 ${
+          <div
+            className={`flex-shrink-0 w-8 sm:w-10 h-8 sm:h-10 min-w-[32px] sm:min-w-[40px] rounded-full border-2 sm:border-3 flex items-center justify-center transition-all duration-300 mr-2 sm:mr-4 ${
               isMainTaskCompleted 
                 ? 'bg-green-500 border-green-500 text-white' 
                 : 'bg-white border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-400'
@@ -193,11 +200,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
             data-testid={`button-toggle-${task.id}`}
           >
             {isMainTaskCompleted ? (
-              <Icon name="Check" size={12} className="text-white sm:size-6" />
+              <Icon name="Check" size={10} className="text-white sm:size-4" />
             ) : (
-              <Icon name="Circle" size={12} className="sm:size-6" />
+              <Icon name="Circle" size={10} className="sm:size-4" />
             )}
-          </button>
+          </div>
         )}
 
         <div className="flex-1 flex items-center">
@@ -218,12 +225,19 @@ const TaskItem: React.FC<TaskItemProps> = ({
           </div>
         </div>
 
-        <div className="flex flex-col gap-1 sm:gap-2">
+        <div 
+          className="flex flex-col gap-1 sm:gap-2"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Верхняя строка: время (занимает 2 места если есть) */}
           {task.estimatedMinutes && (
             <div className="flex items-center">
               <span 
-                onClick={() => task.isTimerRunning ? onStopTimer(task.id) : onStartTimer(task.id)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  task.isTimerRunning ? onStopTimer(task.id) : onStartTimer(task.id);
+                }}
                 className={`flex-shrink-0 w-full h-11 sm:h-12 min-h-[44px] sm:min-h-[48px] rounded-lg text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 font-medium cursor-pointer transition-all duration-200 hover:scale-105 flex items-center justify-center ${
                   getTimerColor()
                 }`}
@@ -238,7 +252,14 @@ const TaskItem: React.FC<TaskItemProps> = ({
           {/* Нижняя строка: + и ⋮ */}
           <div className="flex items-center gap-1 sm:gap-2">
             <button
-              onClick={() => setShowAddSubtask(!showAddSubtask)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!showSubtasks) {
+                  setShowSubtasks(true);
+                }
+                setShowAddSubtask(!showAddSubtask);
+              }}
               className="flex-shrink-0 w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] sm:min-w-[48px] rounded-lg bg-blue-100 text-blue-500 hover:bg-blue-200 hover:text-blue-600 flex items-center justify-center transition-all duration-200"
               title="Добавить подзадачу"
               data-testid={`button-add-subtask-${task.id}`}
@@ -248,7 +269,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
             
             <div className="relative">
               <button
-                onClick={() => setShowActionsMenu(!showActionsMenu)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowActionsMenu(!showActionsMenu);
+                }}
                 className="flex-shrink-0 w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] sm:min-w-[48px] rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-700 flex items-center justify-center transition-all duration-200"
                 title="Действия"
                 data-testid={`button-actions-${task.id}`}
@@ -260,7 +285,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
               {showActionsMenu && (
                 <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[120px]">
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       onEdit(task.id);
                       setShowActionsMenu(false);
                     }}
@@ -271,7 +298,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     Редактировать
                   </button>
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       onDelete(task.id);
                       setShowActionsMenu(false);
                     }}
@@ -315,7 +344,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
               >
                 <button
                   onClick={() => onToggleSubtask(task.id, subtask.id)}
-                  className={`flex-shrink-0 w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] sm:min-w-[48px] rounded-full border-2 flex items-center justify-center transition-all duration-200 mr-2 sm:mr-3 ${
+                  className={`flex-shrink-0 w-8 sm:w-10 h-8 sm:h-10 min-w-[32px] sm:min-w-[40px] rounded-full border-2 flex items-center justify-center transition-all duration-200 mr-2 sm:mr-3 ${
                     subtask.completed
                       ? 'bg-green-500 border-green-500 text-white'
                       : 'bg-white border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-400'
@@ -390,8 +419,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
         </div>
       )}
 
-      {/* Add Subtask Form */}
-      {showAddSubtask && (
+      {/* Add Subtask Form - показывается только когда подзадачи развернуты */}
+      {showAddSubtask && showSubtasks && (
         <div className="border-t border-gray-200 p-2 sm:p-4 bg-blue-50">
           <form onSubmit={handleAddSubtask} className="flex gap-1 sm:gap-2">
             <input
