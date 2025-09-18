@@ -4,6 +4,11 @@ This is an ADHD Kids Task Manager application built as a React TypeScript web ap
 
 # Recent Changes
 
+- **September 18, 2025 - Latest**: Fixed critical issues with subtask addition and mobile time picker:
+  - **Subtask Addition Fix**: Resolved issue where adding subtasks only worked for tasks that already had subtasks. Now the green checkmark button works for all tasks regardless of existing subtasks.
+  - **Vertical iOS-Style Time Picker**: Replaced horizontal slider with vertical swipe time picker in iOS style. Mobile users can now swipe up/down to select time (0-120 minutes) with smooth animations, visual highlighting, and snap-to-value behavior. Touch events properly prevent modal scroll conflicts.
+  - **VerticalTimePicker Component**: New reusable component with touch/mouse support, visual feedback, and quick action buttons.
+
 - **September 18, 2025**: Mobile interface optimization completed - fixed three-dots menu functionality with proper event handling, reduced checkbox sizes from 44×44px to 32×40px for better visual balance, made task cards fully clickable for completion toggling, and resolved subtask form overlay issues by restricting display to expanded subtask states. Added comprehensive event propagation controls to prevent unintended interactions between UI elements.
 
 # User Preferences
