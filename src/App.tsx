@@ -68,6 +68,10 @@ function App() {
   // Touch state for mobile drag and drop
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
   const [isTouchDragging, setIsTouchDragging] = useState(false);
+  
+  // JSON export/import states
+  const [showExportJson, setShowExportJson] = useState(false);
+  const [exportJsonData, setExportJsonData] = useState('');
 
   // Calculate progress for tasks with subtasks
   const calculateProgress = (task: Task): number => {
@@ -263,35 +267,60 @@ function App() {
       
       console.log('Blob created, size:', blob.size);
       
-      // Проверяем, поддерживается ли скачивание файлов
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
       
-      console.log('Device detection:', { isIOS, isMobile });
+      console.log('Device detection:', { isIOS, isSafari });
       
-      if (isIOS || (isMobile && !('download' in document.createElement('a')))) {
-        // Для iOS и старых мобильных браузеров - открываем в новой вкладке
-        console.log('Using iOS/mobile fallback method');
-        const dataURL = `data:application/json;charset=utf-8,${encodeURIComponent(jsonString)}`;
-        window.open(dataURL, '_blank');
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `adhd-tasks-${new Date().toISOString().split('T')[0]}.json`;
+      
+      if (isIOS && isSafari) {
+        // Для iOS Safari - пробуем стандартный метод, если не работает - показываем JSON на странице
+        console.log('Using iOS Safari method');
+        
+        try {
+          link.target = '_blank';
+          link.removeAttribute('download');
+          
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          // Показываем инструкцию пользователю
+          setTimeout(() => {
+            if (confirm('Файл должен был открыться в новой вкладке. Если этого не произошло, нажмите OK для показа данных на экране.')) {
+              // Показываем JSON на странице
+              setExportJsonData(jsonString);
+              setShowExportJson(true);
+            }
+          }, 2000);
+          
+        } catch (error) {
+          console.log('iOS Safari method failed, showing JSON on page');
+          // Показываем JSON на странице как резервный вариант
+          setExportJsonData(jsonString);
+          setShowExportJson(true);
+        }
+        
       } else {
         // Стандартный метод скачивания
         console.log('Using standard download method');
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `adhd-tasks-${new Date().toISOString().split('T')[0]}.json`;
-        
-        // Делаем ссылку невидимой
         link.style.display = 'none';
         
         document.body.appendChild(link);
         console.log('Triggering download click');
         link.click();
         document.body.removeChild(link);
-        URL.revokeObjectURL(url);
         console.log('Download completed');
       }
+      
+      // Освобождаем URL в любом случае
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 2000);
       
     } catch (error) {
       console.error('Export failed:', error);
@@ -799,6 +828,57 @@ function App() {
                   className="flex-1 p-3 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600 transition-colors"
                 >
                   Да, сбросить
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Export JSON Modal for iOS Safari */}
+        {showExportJson && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] transform transition-all duration-300 scale-100">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">Данные задач</h2>
+                <button
+                  onClick={() => setShowExportJson(false)}
+                  className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                  data-testid="button-close-export-json"
+                >
+                  <Icon name="X" size={20} />
+                </button>
+              </div>
+              <p className="text-gray-600 mb-4 text-sm">
+                Скопируйте данные ниже и сохраните в файл с расширением .json:
+              </p>
+              <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-[60vh] mb-4">
+                <textarea
+                  value={exportJsonData}
+                  readOnly
+                  className="w-full h-full min-h-[400px] bg-transparent border-none outline-none text-sm font-mono text-gray-700 resize-none"
+                  data-testid="textarea-export-json"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(exportJsonData).then(() => {
+                      alert('Данные скопированы в буфер обмена!');
+                    }).catch(() => {
+                      alert('Не удалось скопировать. Выделите и скопируйте текст вручную.');
+                    });
+                  }}
+                  className="flex-1 p-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors"
+                  data-testid="button-copy-export-json"
+                >
+                  Скопировать
+                </button>
+                <button
+                  onClick={() => setShowExportJson(false)}
+                  className="p-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-colors px-6"
+                  data-testid="button-close-export-json-bottom"
+                >
+                  Закрыть
                 </button>
               </div>
             </div>
