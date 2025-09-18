@@ -21,15 +21,6 @@ const VerticalTimePicker: React.FC<VerticalTimePickerProps> = ({ value, onChange
   
   // Find current index - всегда находим правильный индекс
   const validIndex = Math.round(clampedValue / 5);
-  
-  console.log('VerticalTimePicker:', { 
-    inputValue: value, 
-    numericValue, 
-    roundedValue, 
-    clampedValue, 
-    validIndex, 
-    shouldShow: clampedValue 
-  });
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);
@@ -103,13 +94,6 @@ const VerticalTimePicker: React.FC<VerticalTimePickerProps> = ({ value, onChange
 
   return (
     <div className="bg-gray-100 rounded-xl p-4 mb-3">
-      {/* Selected time display */}
-      <div className="text-center mb-4">
-        <span className="text-3xl font-bold text-gray-800">
-          {clampedValue} мин
-        </span>
-      </div>
-
       {/* Vertical time picker */}
       <div 
         ref={containerRef}
@@ -125,8 +109,6 @@ const VerticalTimePicker: React.FC<VerticalTimePickerProps> = ({ value, onChange
           touchAction: 'none' // Prevent default touch behavior
         }}
       >
-        {/* Highlight bar */}
-        <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 h-10 bg-blue-50 border-t-2 border-b-2 border-blue-200 z-10 pointer-events-none" />
         
         {/* Time values */}
         <div 

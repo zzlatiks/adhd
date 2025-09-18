@@ -73,16 +73,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
     return colors[index % colors.length];
   };
 
-  const handleAddSubtask = (e: React.FormEvent) => {
-    console.log('handleAddSubtask called from form submit');
-    e.preventDefault();
-    if (newSubtaskTitle.trim()) {
-      console.log('Adding subtask via form:', newSubtaskTitle.trim());
-      onAddSubtask(task.id, newSubtaskTitle.trim());
-      setNewSubtaskTitle('');
-      setShowAddSubtask(false);
-    }
-  };
 
   const handleEditSubtask = (subtaskId: string, currentTitle: string) => {
     setEditingSubtaskId(subtaskId);
@@ -423,7 +413,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
       {/* Add Subtask Form - показывается когда нажата кнопка добавления подзадач */}
       {showAddSubtask && (
         <div className="border-t border-gray-200 p-3 sm:p-4 bg-blue-50">
-          <form onSubmit={handleAddSubtask} className="flex gap-2 items-start">
+          <div className="flex gap-2 items-start">
             <input
               type="text"
               value={newSubtaskTitle}
@@ -438,20 +428,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
                   }
                 }
               }}
-              placeholder="Название подзадачи..."
+              placeholder="Название подзадачи... (нажмите Enter)"
               className="flex-1 p-2 sm:p-3 border border-gray-300 rounded-lg focus:border-blue-400 focus:outline-none text-sm min-h-[40px] max-w-full"
               autoFocus
             />
-            <button
-              type="submit"
-              onClick={() => console.log('Green checkmark clicked! Button disabled?', !newSubtaskTitle.trim())}
-              className="w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] min-h-[44px] rounded bg-green-100 text-green-600 hover:bg-green-200 flex items-center justify-center transition-all duration-200 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={!newSubtaskTitle.trim()}
-              title="Добавить"
-              data-testid={`button-add-subtask-submit-${task.id}`}
-            >
-              <Icon name="Check" size={16} />
-            </button>
             <button
               type="button"
               onClick={() => setShowAddSubtask(false)}
@@ -461,7 +441,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
             >
               <Icon name="X" size={16} />
             </button>
-          </form>
+          </div>
         </div>
       )}
 
