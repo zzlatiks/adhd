@@ -140,10 +140,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
           ? 'bg-red-50 border-red-300' 
           : 'bg-white border-gray-200'
     }`}>
-      <div className="flex items-center p-3 sm:p-4 transition-all duration-300 relative">
+      <div className="flex items-center p-2 sm:p-4 transition-all duration-300 relative">
         <button
           onClick={() => hasSubtasks ? setShowSubtasks(!showSubtasks) : onToggle(task.id)}
-          className={`flex-shrink-0 w-10 sm:w-14 h-10 sm:h-14 min-w-[40px] sm:min-w-[56px] rounded-full border-3 flex items-center justify-center transition-all duration-300 mr-2 sm:mr-4 ${
+          className={`flex-shrink-0 w-8 sm:w-14 h-8 sm:h-14 min-w-[32px] sm:min-w-[56px] rounded-full border-2 sm:border-3 flex items-center justify-center transition-all duration-300 mr-2 sm:mr-4 ${
             hasSubtasks 
               ? 'bg-white border-blue-500 text-blue-500 hover:border-blue-600 hover:text-blue-600' 
               : 'bg-white border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-400'
@@ -151,11 +151,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
           data-testid={`button-toggle-${task.id}`}
         >
           {hasSubtasks ? (
-            <Icon name={showSubtasks ? "ChevronUp" : "ChevronDown"} size={20} className="sm:size-6" />
+            <Icon name={showSubtasks ? "ChevronUp" : "ChevronDown"} size={16} className="sm:size-6" />
           ) : isMainTaskCompleted ? (
-            <Icon name="Check" size={20} className="text-green-500 sm:size-6" />
+            <Icon name="Check" size={16} className="text-green-500 sm:size-6" />
           ) : (
-            <Icon name="Circle" size={20} className="sm:size-6" />
+            <Icon name="Circle" size={16} className="sm:size-6" />
           )}
         </button>
 
@@ -165,7 +165,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <span className={`text-base sm:text-lg font-semibold transition-all duration-300 ${
+              <span className={`text-sm sm:text-lg font-semibold transition-all duration-300 ${
                 isMainTaskCompleted ? 'text-green-700 line-through' : isOvertime ? 'text-red-700' : 'text-gray-800'
               }`}>
                 {task.title}
@@ -173,7 +173,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
               {task.estimatedMinutes && (
                 <span 
                   onClick={() => task.isTimerRunning ? onStopTimer(task.id) : onStartTimer(task.id)}
-                  className={`text-xs sm:text-sm px-1 sm:px-2 py-1 rounded-full font-medium cursor-pointer transition-all duration-200 hover:scale-105 ${
+                  className={`text-xs sm:text-sm px-1 sm:px-2 py-0.5 sm:py-1 rounded-full font-medium cursor-pointer transition-all duration-200 hover:scale-105 ${
                     getTimerColor()
                   }`}
                   title={task.isTimerRunning ? 'Остановить таймер' : 'Запустить таймер'}
@@ -199,62 +199,62 @@ const TaskItem: React.FC<TaskItemProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <button
             onClick={() => setShowAddSubtask(!showAddSubtask)}
-            className="flex-shrink-0 w-9 sm:w-12 h-9 sm:h-12 min-w-[36px] sm:min-w-[48px] rounded-lg bg-blue-100 text-blue-500 hover:bg-blue-200 hover:text-blue-600 flex items-center justify-center transition-all duration-200"
+            className="flex-shrink-0 w-7 sm:w-12 h-7 sm:h-12 min-w-[28px] sm:min-w-[48px] rounded-lg bg-blue-100 text-blue-500 hover:bg-blue-200 hover:text-blue-600 flex items-center justify-center transition-all duration-200"
             title="Добавить подзадачу"
             data-testid={`button-add-subtask-${task.id}`}
           >
-            <Icon name="Plus" size={16} className="sm:size-5" />
+            <Icon name="Plus" size={14} className="sm:size-5" />
           </button>
           
           
           <button
             onClick={() => onEdit(task.id)}
-            className="flex-shrink-0 w-9 sm:w-12 h-9 sm:h-12 min-w-[36px] sm:min-w-[48px] rounded-lg bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700 flex items-center justify-center transition-all duration-200"
+            className="flex-shrink-0 w-7 sm:w-12 h-7 sm:h-12 min-w-[28px] sm:min-w-[48px] rounded-lg bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700 flex items-center justify-center transition-all duration-200"
             title="Редактировать задачу"
             data-testid={`button-edit-${task.id}`}
           >
-            <Icon name="Pencil" size={16} className="sm:size-5" />
+            <Icon name="Pencil" size={14} className="sm:size-5" />
           </button>
           
           <button
             onClick={() => onMoveUp(task.id)}
-            className="flex-shrink-0 w-9 sm:w-12 h-9 sm:h-12 min-w-[36px] sm:min-w-[48px] rounded-lg bg-indigo-100 text-indigo-600 hover:bg-indigo-200 hover:text-indigo-700 flex items-center justify-center transition-all duration-200"
+            className="flex-shrink-0 w-7 sm:w-12 h-7 sm:h-12 min-w-[28px] sm:min-w-[48px] rounded-lg bg-indigo-100 text-indigo-600 hover:bg-indigo-200 hover:text-indigo-700 flex items-center justify-center transition-all duration-200"
             title="Переместить вверх"
             data-testid={`button-move-up-${task.id}`}
           >
-            <Icon name="ArrowUp" size={16} className="sm:size-5" />
+            <Icon name="ChevronUp" size={14} className="sm:size-5" />
           </button>
           
           <button
             onClick={() => onMoveDown(task.id)}
-            className="flex-shrink-0 w-9 sm:w-12 h-9 sm:h-12 min-w-[36px] sm:min-w-[48px] rounded-lg bg-purple-100 text-purple-600 hover:bg-purple-200 hover:text-purple-700 flex items-center justify-center transition-all duration-200"
+            className="flex-shrink-0 w-7 sm:w-12 h-7 sm:h-12 min-w-[28px] sm:min-w-[48px] rounded-lg bg-purple-100 text-purple-600 hover:bg-purple-200 hover:text-purple-700 flex items-center justify-center transition-all duration-200"
             title="Переместить вниз"
             data-testid={`button-move-down-${task.id}`}
           >
-            <Icon name="ArrowDown" size={16} className="sm:size-5" />
+            <Icon name="ChevronDown" size={14} className="sm:size-5" />
           </button>
           
           <button
             onClick={() => onDelete(task.id)}
-            className="flex-shrink-0 w-9 sm:w-12 h-9 sm:h-12 min-w-[36px] sm:min-w-[48px] rounded-lg bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600 flex items-center justify-center transition-all duration-200"
+            className="flex-shrink-0 w-7 sm:w-12 h-7 sm:h-12 min-w-[28px] sm:min-w-[48px] rounded-lg bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600 flex items-center justify-center transition-all duration-200"
             data-testid={`button-delete-${task.id}`}
           >
-            <Icon name="Trash2" size={16} className="sm:size-5" />
+            <Icon name="Trash2" size={14} className="sm:size-5" />
           </button>
         </div>
       </div>
 
       {/* Subtasks Section */}
       {showSubtasks && hasSubtasks && (
-        <div className="border-t border-gray-200 p-4 bg-gray-50">
+        <div className="border-t border-gray-200 p-2 sm:p-4 bg-gray-50">
           <div className="space-y-2">
             {task.subtasks.map((subtask) => (
               <div
                 key={subtask.id}
-                className={`flex items-center p-3 rounded-lg border transition-all duration-200 ${
+                className={`flex items-center p-2 sm:p-3 rounded-lg border transition-all duration-200 ${
                   subtask.completed
                     ? 'bg-green-50 border-green-200'
                     : 'bg-white border-gray-200 hover:border-blue-200'
@@ -262,7 +262,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
               >
                 <button
                   onClick={() => onToggleSubtask(task.id, subtask.id)}
-                  className={`flex-shrink-0 w-10 h-10 min-w-[40px] rounded-full border-2 flex items-center justify-center transition-all duration-200 mr-3 ${
+                  className={`flex-shrink-0 w-8 sm:w-10 h-8 sm:h-10 min-w-[32px] sm:min-w-[40px] rounded-full border-2 flex items-center justify-center transition-all duration-200 mr-2 sm:mr-3 ${
                     subtask.completed
                       ? 'bg-green-500 border-green-500 text-white'
                       : 'bg-white border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-400'
@@ -287,7 +287,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     />
                     <button
                       type="submit"
-                      className="w-6 h-6 rounded bg-green-100 text-green-600 hover:bg-green-200 flex items-center justify-center transition-all duration-200"
+                      className="w-5 sm:w-6 h-5 sm:h-6 rounded bg-green-100 text-green-600 hover:bg-green-200 flex items-center justify-center transition-all duration-200"
                       title="Сохранить"
                     >
                       <Icon name="Check" size={12} />
@@ -295,7 +295,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     <button
                       type="button"
                       onClick={handleCancelEditSubtask}
-                      className="w-6 h-6 rounded bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-all duration-200"
+                      className="w-5 sm:w-6 h-5 sm:h-6 rounded bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-all duration-200"
                       title="Отмена"
                     >
                       <Icon name="X" size={12} />
@@ -315,7 +315,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     
                     <button
                       onClick={() => handleEditSubtask(subtask.id, subtask.title)}
-                      className="flex-shrink-0 w-10 h-10 min-w-[40px] rounded bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700 flex items-center justify-center transition-all duration-200 mr-1"
+                      className="flex-shrink-0 w-7 sm:w-10 h-7 sm:h-10 min-w-[28px] sm:min-w-[40px] rounded bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700 flex items-center justify-center transition-all duration-200 mr-1"
                       title="Редактировать подзадачу"
                       data-testid={`button-edit-subtask-${subtask.id}`}
                     >
@@ -324,7 +324,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     
                     <button
                       onClick={() => onDeleteSubtask(task.id, subtask.id)}
-                      className="flex-shrink-0 w-10 h-10 min-w-[40px] rounded bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600 flex items-center justify-center transition-all duration-200"
+                      className="flex-shrink-0 w-7 sm:w-10 h-7 sm:h-10 min-w-[28px] sm:min-w-[40px] rounded bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600 flex items-center justify-center transition-all duration-200"
                       data-testid={`button-delete-subtask-${subtask.id}`}
                     >
                       <Icon name="X" size={16} />
@@ -339,26 +339,26 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
       {/* Add Subtask Form */}
       {showAddSubtask && (
-        <div className="border-t border-gray-200 p-4 bg-blue-50">
-          <form onSubmit={handleAddSubtask} className="flex gap-2">
+        <div className="border-t border-gray-200 p-2 sm:p-4 bg-blue-50">
+          <form onSubmit={handleAddSubtask} className="flex gap-1 sm:gap-2">
             <input
               type="text"
               value={newSubtaskTitle}
               onChange={(e) => setNewSubtaskTitle(e.target.value)}
               placeholder="Название подзадачи..."
-              className="flex-1 p-2 border border-gray-300 rounded-lg focus:border-blue-400 focus:outline-none text-sm"
+              className="flex-1 p-1.5 sm:p-2 border border-gray-300 rounded-lg focus:border-blue-400 focus:outline-none text-xs sm:text-sm"
               autoFocus
             />
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
+              className="px-2 sm:px-4 py-1.5 sm:py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-xs sm:text-sm font-medium"
             >
               Добавить
             </button>
             <button
               type="button"
               onClick={() => setShowAddSubtask(false)}
-              className="px-3 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors text-sm"
+              className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors text-xs sm:text-sm"
             >
               <Icon name="X" size={16} />
             </button>

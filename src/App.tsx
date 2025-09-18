@@ -655,14 +655,14 @@ function App() {
       <div className="container mx-auto px-4 py-6 max-w-4xl">
 
         {/* Header */}
-        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-lg border-2 border-gray-100 mb-6">
+        <div className="bg-white rounded-2xl p-3 sm:p-6 shadow-lg border-2 border-gray-100 mb-4 sm:mb-6">
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:items-end sm:justify-between">
             <button
               onClick={handleNewDay}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 h-10 sm:h-14 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg w-full sm:w-auto text-sm sm:text-base"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-3 sm:px-6 h-8 sm:h-14 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg w-full sm:w-auto text-xs sm:text-base"
               data-testid="button-new-day"
             >
-              <Icon name="RefreshCw" size={16} className="mr-1 sm:mr-2 sm:size-5" />
+              <Icon name="RefreshCw" size={14} className="mr-1 sm:mr-2 sm:size-5" />
               Новый день
             </button>
             
@@ -671,24 +671,24 @@ function App() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowCompletedTasks(!showCompletedTasks)}
-                  className="px-2 sm:px-4 h-10 sm:h-14 min-w-[44px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg bg-gray-500 hover:bg-gray-600 text-white font-semibold"
+                  className="px-1.5 sm:px-4 h-8 sm:h-14 min-w-[32px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg bg-gray-500 hover:bg-gray-600 text-white font-semibold"
                   title={showCompletedTasks ? 'Скрыть выполненные' : 'Показать выполненные'}
                   data-testid="button-toggle-completed"
                 >
-                  <Icon name={showCompletedTasks ? "Eye" : "EyeOff"} size={18} className="sm:size-6" />
+                  <Icon name={showCompletedTasks ? "Eye" : "EyeOff"} size={16} className="sm:size-6" />
                 </button>
                 
                 <button
                   onClick={exportTasks}
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-2 sm:px-4 h-10 sm:h-14 min-w-[44px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-1.5 sm:px-4 h-8 sm:h-14 min-w-[32px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
                   title="Экспорт задач"
                   data-testid="button-export"
                 >
-                  <Icon name="Upload" size={18} className="sm:size-6" />
+                  <Icon name="Upload" size={16} className="sm:size-6" />
                 </button>
                 
-                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-2 sm:px-4 h-10 sm:h-14 min-w-[44px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer font-semibold" title="Импорт задач">
-                  <Icon name="Download" size={18} className="sm:size-6" />
+                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-1.5 sm:px-4 h-8 sm:h-14 min-w-[32px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer font-semibold" title="Импорт задач">
+                  <Icon name="Download" size={16} className="sm:size-6" />
                   <input
                     type="file"
                     accept=".json"
@@ -702,11 +702,11 @@ function App() {
               {/* Кнопка добавления задачи */}
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 sm:px-6 h-12 sm:h-16 rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-3 sm:px-6 h-10 sm:h-16 rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg"
                 title="Добавить задачу"
                 data-testid="button-add-task"
               >
-                <Icon name="Plus" size={24} className="sm:size-8" />
+                <Icon name="Plus" size={20} className="sm:size-8" />
               </button>
             </div>
           </div>
@@ -714,13 +714,13 @@ function App() {
 
         {/* All Tasks */}
         {allTasks.length > 0 && (
-          <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100 mb-6">
+          <div className="bg-white rounded-2xl p-3 sm:p-6 shadow-lg border-2 border-gray-100 mb-4 sm:mb-6">
             {/* Progress Bar at top */}
             <div className="mb-6">
               <ProgressBar completed={completedTasks} total={totalTasks} />
             </div>
             
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {allTasks.map((task, index) => (
                 <div
                   key={task.id}
