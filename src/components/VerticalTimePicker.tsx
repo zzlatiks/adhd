@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 
 interface VerticalTimePickerProps {
   value: number | '';
@@ -6,136 +6,30 @@ interface VerticalTimePickerProps {
 }
 
 const VerticalTimePicker: React.FC<VerticalTimePickerProps> = ({ value, onChange }) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [startY, setStartY] = useState(0);
-  const [startValue, setStartValue] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Create array of time values (0, 5, 10, 15, ... 120)
-  const timeValues = Array.from({ length: 25 }, (_, i) => i * 5);
+  // Варианты времени для выбора
+  const timeOptions = [5, 10, 15, 30];
   
-  // Current numeric value - всегда округляем до ближайшего кратного 5
-  const numericValue = typeof value === 'number' ? value : 0;
-  const roundedValue = Math.round(numericValue / 5) * 5;
-  const clampedValue = Math.max(0, Math.min(120, roundedValue));
-  
-  // Find current index - всегда находим правильный индекс
-  const validIndex = Math.round(clampedValue / 5);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setIsDragging(true);
-    setStartY(e.touches[0].clientY);
-    setStartValue(numericValue);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return;
-    
-    e.preventDefault(); // Prevent modal scroll
-    
-    const currentY = e.touches[0].clientY;
-    const deltaY = startY - currentY; // Negative when swiping down, positive when swiping up
-    
-    // Each 40px of movement changes by 5 minutes (matching visual row height)
-    const steps = Math.round(deltaY / 40);
-    const newValue = Math.max(0, Math.min(120, startValue + (steps * 5)));
-    
-    if (newValue !== numericValue) {
-      onChange(newValue);
-    }
-  };
-
-  const handleTouchEnd = () => {
-    setIsDragging(false);
-    
-    // Snap to nearest value
-    const nearestIndex = Math.round(numericValue / 5);
-    const snappedValue = Math.max(0, Math.min(120, nearestIndex * 5));
-    if (snappedValue !== numericValue) {
-      onChange(snappedValue);
-    }
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setStartY(e.clientY);
-    setStartValue(numericValue);
-  };
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging) return;
-    
-    const currentY = e.clientY;
-    const deltaY = startY - currentY;
-    
-    // Each 40px of movement changes by 5 minutes (matching visual row height)
-    const steps = Math.round(deltaY / 40);
-    const newValue = Math.max(0, Math.min(120, startValue + (steps * 5)));
-    
-    if (newValue !== numericValue) {
-      onChange(newValue);
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging, startY, startValue]);
+  // Текущее значение
+  const currentValue = typeof value === 'number' ? value : 0;
 
   return (
     <div className="bg-gray-100 rounded-xl p-4 mb-3">
-      {/* Vertical time picker */}
-      <div 
-        ref={containerRef}
-        className="relative h-32 overflow-hidden bg-white rounded-lg shadow-inner"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onMouseDown={handleMouseDown}
-        style={{ 
-          cursor: isDragging ? 'grabbing' : 'grab',
-          userSelect: 'none',
-          WebkitUserSelect: 'none',
-          touchAction: 'none' // Prevent default touch behavior
-        }}
-      >
-        
-        {/* Time values */}
-        <div 
-          className="flex flex-col items-center justify-center h-full transition-transform duration-200"
-          style={{
-            transform: `translateY(${(12 - validIndex) * 40}px)`,
-            transition: isDragging ? 'none' : 'transform 0.2s ease-out'
-          }}
-        >
-          {timeValues.map((time, index) => (
-            <div
-              key={time}
-              className={`h-10 flex items-center justify-center text-lg font-medium transition-all duration-200 ${
-                index === validIndex 
-                  ? 'text-blue-600 scale-110' 
-                  : Math.abs(index - validIndex) === 1
-                    ? 'text-gray-600 scale-100'
-                    : 'text-gray-400 scale-90'
-              }`}
-              style={{
-                opacity: Math.max(0.3, 1 - Math.abs(index - validIndex) * 0.3)
-              }}
-            >
-              {time} мин
-            </div>
-          ))}
-        </div>
+      {/* Кнопки выбора времени */}
+      <div className="grid grid-cols-2 gap-3">
+        {timeOptions.map((minutes) => (
+          <button
+            key={minutes}
+            onClick={() => onChange(minutes)}
+            className={`p-4 rounded-lg text-lg font-semibold transition-all duration-200 ${
+              currentValue === minutes
+                ? 'bg-blue-500 text-white shadow-md'
+                : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 border border-gray-200'
+            }`}
+            data-testid={`time-option-${minutes}`}
+          >
+            {minutes} мин
+          </button>
+        ))}
       </div>
     </div>
   );
