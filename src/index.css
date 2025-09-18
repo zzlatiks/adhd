@@ -1,3 +1,94 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Мобильные улучшения */
+@media (max-width: 640px) {
+  /* Улучшенные touch targets для мобильных */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Улучшенные отступы на мобильных */
+  .mobile-padding {
+    padding: 12px;
+  }
+  
+  /* Предотвращение случайного zoom при double-tap */
+  * {
+    touch-action: manipulation;
+  }
+  
+  /* Улучшенное поведение при touch drag */
+  .touch-pan-y {
+    touch-action: pan-y;
+  }
+  
+  /* Более заметная визуальная обратная связь для touch */
+  .touch-feedback:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+  }
+  
+  /* Улучшенный contrast для мобильных экранов */
+  .mobile-high-contrast {
+    filter: contrast(1.1);
+  }
+}
+
+/* Особые стили для маленьких экранов */
+@media (max-width: 480px) {
+  /* Уменьшенные отступы для очень маленьких экранов */
+  .container {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  
+  /* Адаптивные размеры шрифтов */
+  .text-responsive {
+    font-size: clamp(0.875rem, 2.5vw, 1rem);
+  }
+  
+  /* Улучшенное поведение drag для touch устройств */
+  .touch-drag-item {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+}
+
+/* Landscape ориентация на мобильных */
+@media (max-width: 768px) and (orientation: landscape) {
+  /* Оптимизация для landscape на мобильных */
+  .landscape-mobile {
+    height: 100vh;
+    overflow-y: auto;
+  }
+}
+
+/* High DPI экраны (Retina) */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Улучшенная четкость для Retina экранов */
+  .retina-optimize {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Доступность - улучшенная видимость focus */
+@media (prefers-reduced-motion: no-preference) {
+  .focus-visible:focus-visible {
+    outline: 3px solid #3b82f6;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* Темная тема для системных настроек */
+@media (prefers-color-scheme: dark) {
+  /* Базовые стили для темной темы, если пользователь предпочитает */
+  :root {
+    color-scheme: dark;
+  }
+}

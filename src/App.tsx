@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import type React from 'react';
 import { Task, Subtask } from './types';
 import TaskItem from './components/TaskItem';
 import AddTaskModal from './components/AddTaskModal';
@@ -67,6 +68,10 @@ function App() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  
+  // Touch state for mobile drag and drop
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const [isTouchDragging, setIsTouchDragging] = useState(false);
 
   // Calculate progress for tasks with subtasks
   const calculateProgress = (task: Task): number => {
@@ -434,6 +439,103 @@ function App() {
     setDragOverIndex(null);
   };
 
+  // Touch handlers for mobile drag and drop
+  const handleTouchStart = (e: React.TouchEvent, taskId: string) => {
+    const touch = e.touches[0];
+    setTouchStartY(touch.clientY);
+    setDraggedTaskId(taskId);
+    setIsTouchDragging(false);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!draggedTaskId || touchStartY === null) return;
+    
+    e.preventDefault(); // Prevent scrolling
+    const touch = e.touches[0];
+    
+    // Start dragging if moved more than 10px
+    if (Math.abs(touch.clientY - touchStartY) > 10 && !isTouchDragging) {
+      setIsTouchDragging(true);
+    }
+    
+    if (isTouchDragging) {
+      // Find the task element under the touch point
+      const taskElements = document.querySelectorAll('[data-task-index]');
+      let targetIndex = null;
+      
+      for (let i = 0; i < taskElements.length; i++) {
+        const element = taskElements[i] as HTMLElement;
+        const rect = element.getBoundingClientRect();
+        
+        if (touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+          targetIndex = parseInt(element.getAttribute('data-task-index') || '0');
+          break;
+        }
+      }
+      
+      setDragOverIndex(targetIndex);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!draggedTaskId || !isTouchDragging) {
+      // Reset touch state
+      setDraggedTaskId(null);
+      setTouchStartY(null);
+      setIsTouchDragging(false);
+      setDragOverIndex(null);
+      return;
+    }
+    
+    const touch = e.changedTouches[0];
+    
+    // Find the target index based on touch position
+    const taskElements = document.querySelectorAll('[data-task-index]');
+    let targetIndex = null;
+    
+    for (let i = 0; i < taskElements.length; i++) {
+      const element = taskElements[i] as HTMLElement;
+      const rect = element.getBoundingClientRect();
+      
+      if (touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+        targetIndex = parseInt(element.getAttribute('data-task-index') || '0');
+        break;
+      }
+    }
+    
+    if (targetIndex !== null) {
+      const draggedIndex = allTasks.findIndex(task => task.id === draggedTaskId);
+      
+      if (draggedIndex !== -1 && draggedIndex !== targetIndex) {
+        // Get the target task ID from the visible list
+        const targetTaskId = allTasks[targetIndex]?.id;
+        
+        if (targetTaskId) {
+          // Reorder in the full tasks array without losing hidden tasks
+          setTasks(prevTasks => {
+            const newTasks = [...prevTasks];
+            const fullDraggedIndex = newTasks.findIndex(task => task.id === draggedTaskId);
+            const fullTargetIndex = newTasks.findIndex(task => task.id === targetTaskId);
+            
+            if (fullDraggedIndex === -1 || fullTargetIndex === -1) return prevTasks;
+            
+            // Move dragged task to target position
+            const [draggedTask] = newTasks.splice(fullDraggedIndex, 1);
+            newTasks.splice(fullTargetIndex, 0, draggedTask);
+            
+            return newTasks;
+          });
+        }
+      }
+    }
+    
+    // Reset touch state
+    setDraggedTaskId(null);
+    setTouchStartY(null);
+    setIsTouchDragging(false);
+    setDragOverIndex(null);
+  };
+
   // Timer handlers
   const startTimer = useCallback((taskId: string) => {
     setTasks(prevTasks =>
@@ -509,42 +611,46 @@ function App() {
       <div className="container mx-auto px-4 py-6 max-w-4xl">
 
         {/* Header */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100 mb-6">
-          <div className="flex items-end justify-between">
+        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-lg border-2 border-gray-100 mb-6">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:items-end sm:justify-between">
             <button
               onClick={handleNewDay}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-4 h-12 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 h-14 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg w-full sm:w-auto"
+              data-testid="button-new-day"
             >
               <Icon name="RefreshCw" size={20} className="mr-2" />
               Новый день
             </button>
             
-            <div className="flex gap-4 flex-wrap items-end">
+            <div className="flex gap-3 flex-wrap items-center justify-center w-full sm:w-auto">
               {/* Блок кнопок управления */}
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowCompletedTasks(!showCompletedTasks)}
-                  className="px-3 h-12 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg bg-gray-500 hover:bg-gray-600 text-white font-semibold"
+                  className="px-4 h-14 min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg bg-gray-500 hover:bg-gray-600 text-white font-semibold"
                   title={showCompletedTasks ? 'Скрыть выполненные' : 'Показать выполненные'}
+                  data-testid="button-toggle-completed"
                 >
-                  <Icon name={showCompletedTasks ? "Eye" : "EyeOff"} size={20} />
+                  <Icon name={showCompletedTasks ? "Eye" : "EyeOff"} size={24} />
                 </button>
                 
                 <button
                   onClick={exportTasks}
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-3 h-12 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-4 h-14 min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
                   title="Экспорт задач"
+                  data-testid="button-export"
                 >
-                  <Icon name="Upload" size={20} />
+                  <Icon name="Upload" size={24} />
                 </button>
                 
-                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-3 h-12 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer font-semibold" title="Импорт задач">
-                  <Icon name="Download" size={20} />
+                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 h-14 min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer font-semibold" title="Импорт задач">
+                  <Icon name="Download" size={24} />
                   <input
                     type="file"
                     accept=".json"
                     onChange={handleImportTasks}
                     className="hidden"
+                    data-testid="input-import"
                   />
                 </label>
               </div>
@@ -552,8 +658,9 @@ function App() {
               {/* Кнопка добавления задачи */}
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 h-14 rounded-xl flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-6 h-16 rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg"
                 title="Добавить задачу"
+                data-testid="button-add-task"
               >
                 <Icon name="Plus" size={32} />
               </button>
@@ -573,18 +680,23 @@ function App() {
               {allTasks.map((task, index) => (
                 <div
                   key={task.id}
+                  data-task-index={index}
                   draggable="true"
                   onDragStart={() => handleDragStart(task.id)}
                   onDragOver={(e) => handleDragOver(e, index)}
                   onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, index)}
-                  className={`cursor-move transition-all duration-200 ${
+                  onTouchStart={(e) => handleTouchStart(e, task.id)}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  className={`cursor-move touch-pan-y transition-all duration-200 ${
                     task.type === 'temporary' ? 'border-2 border-green-400 rounded-xl p-1' : ''
                   } ${
                     dragOverIndex === index ? 'scale-105 shadow-xl' : ''
                   } ${
-                    draggedTaskId === task.id ? 'opacity-50' : ''
+                    draggedTaskId === task.id ? (isTouchDragging ? 'opacity-70 scale-105' : 'opacity-50') : ''
                   }`}
+                  data-testid={`task-card-${task.id}`}
                 >
                   <TaskItem
                     task={task}
