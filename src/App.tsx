@@ -624,49 +624,6 @@ function App() {
               <Icon name="RefreshCw" size={16} className="sm:size-6" />
             </button>
             
-            <div className="flex gap-3 flex-wrap items-center justify-center w-full sm:w-auto">
-              {/* Блок кнопок управления */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setShowCompletedTasks(!showCompletedTasks)}
-                  className="px-1.5 sm:px-4 h-8 sm:h-14 min-w-[32px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg bg-gray-500 hover:bg-gray-600 text-white font-semibold"
-                  title={showCompletedTasks ? 'Скрыть выполненные' : 'Показать выполненные'}
-                  data-testid="button-toggle-completed"
-                >
-                  <Icon name={showCompletedTasks ? "Eye" : "EyeOff"} size={16} className="sm:size-6" />
-                </button>
-                
-                <button
-                  onClick={exportTasks}
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-1.5 sm:px-4 h-8 sm:h-14 min-w-[32px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
-                  title="Экспорт задач"
-                  data-testid="button-export"
-                >
-                  <Icon name="Upload" size={16} className="sm:size-6" />
-                </button>
-                
-                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-1.5 sm:px-4 h-8 sm:h-14 min-w-[32px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer font-semibold" title="Импорт задач">
-                  <Icon name="Download" size={16} className="sm:size-6" />
-                  <input
-                    type="file"
-                    accept=".json"
-                    onChange={handleImportTasks}
-                    className="hidden"
-                    data-testid="input-import"
-                  />
-                </label>
-              </div>
-              
-              {/* Кнопка добавления задачи */}
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-3 sm:px-6 h-10 sm:h-16 rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg"
-                title="Добавить задачу"
-                data-testid="button-add-task"
-              >
-                <Icon name="Plus" size={20} className="sm:size-8" />
-              </button>
-            </div>
           </div>
         </div>
 
@@ -702,6 +659,7 @@ function App() {
                 >
                   <TaskItem
                     task={task}
+                    index={index}
                     onToggle={toggleTask}
                     onDelete={deleteTask}
                     onToggleSubtask={toggleSubtask}
@@ -717,6 +675,50 @@ function App() {
             </div>
           </div>
         )}
+
+        {/* Блок кнопок управления - перемещен вниз */}
+        <div className="bg-white rounded-2xl p-3 sm:p-6 shadow-lg border-2 border-gray-100 mb-4 sm:mb-6">
+          <div className="flex gap-2 items-center justify-center flex-wrap">
+            {/* Кнопка добавления задачи */}
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-3 sm:px-6 h-10 sm:h-12 rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+              title="Добавить задачу"
+              data-testid="button-add-task"
+            >
+              <Icon name="Plus" size={20} className="sm:size-6" />
+            </button>
+            
+            <button
+              onClick={() => setShowCompletedTasks(!showCompletedTasks)}
+              className="px-3 sm:px-4 h-10 sm:h-12 min-w-[44px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg bg-gray-500 hover:bg-gray-600 text-white font-semibold"
+              title={showCompletedTasks ? 'Скрыть выполненные' : 'Показать выполненные'}
+              data-testid="button-toggle-completed"
+            >
+              <Icon name={showCompletedTasks ? "Eye" : "EyeOff"} size={16} className="sm:size-5" />
+            </button>
+            
+            <button
+              onClick={exportTasks}
+              className="bg-purple-500 hover:bg-purple-600 text-white px-3 sm:px-4 h-10 sm:h-12 min-w-[44px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
+              title="Экспорт задач"
+              data-testid="button-export"
+            >
+              <Icon name="Upload" size={16} className="sm:size-5" />
+            </button>
+            
+            <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-3 sm:px-4 h-10 sm:h-12 min-w-[44px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer font-semibold" title="Импорт задач">
+              <Icon name="Download" size={16} className="sm:size-5" />
+              <input
+                type="file"
+                accept=".json"
+                onChange={handleImportTasks}
+                className="hidden"
+                data-testid="input-import"
+              />
+            </label>
+          </div>
+        </div>
 
         {/* Empty State */}
         {totalTasks === 0 && (

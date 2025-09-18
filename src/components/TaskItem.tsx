@@ -4,6 +4,7 @@ import Icon from './Icon';
 
 interface TaskItemProps {
   task: Task;
+  index: number;
   onToggle: (taskId: string) => void;
   onDelete: (taskId: string) => void;
   onToggleSubtask: (taskId: string, subtaskId: string) => void;
@@ -17,6 +18,7 @@ interface TaskItemProps {
 
 const TaskItem: React.FC<TaskItemProps> = ({ 
   task, 
+  index,
   onToggle, 
   onDelete, 
   onToggleSubtask, 
@@ -55,23 +57,20 @@ const TaskItem: React.FC<TaskItemProps> = ({
   const isMainTaskCompleted = hasSubtasks ? task.subtasks.every(s => s.completed) : task.completed;
   const progressPercentage = task.progress || 0;
 
-  // Функция для получения цвета задачи на основе хеша от ID
+  // Функция для получения цвета задачи на основе индекса для чередования
   const getTaskColor = () => {
     const colors = [
       'border-blue-200 bg-blue-50',
-      'border-green-200 bg-green-50', 
       'border-purple-200 bg-purple-50',
       'border-pink-200 bg-pink-50',
-      'border-yellow-200 bg-yellow-50',
+      'border-teal-200 bg-teal-50',
       'border-indigo-200 bg-indigo-50',
       'border-orange-200 bg-orange-50',
-      'border-teal-200 bg-teal-50'
+      'border-yellow-200 bg-yellow-50',
+      'border-green-200 bg-green-50'
     ];
-    const hash = task.id.split('').reduce((a, b) => {
-      a = ((a << 5) - a) + b.charCodeAt(0);
-      return a & a;
-    }, 0);
-    return colors[Math.abs(hash) % colors.length];
+    // Используем индекс для последовательного чередования цветов
+    return colors[index % colors.length];
   };
 
   const handleAddSubtask = (e: React.FormEvent) => {
@@ -283,7 +282,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
               
               {/* Выпадающее меню */}
               {showActionsMenu && (
-                <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[120px]">
+                <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[120px]">
                   <button
                     onClick={(e) => {
                       e.preventDefault();
