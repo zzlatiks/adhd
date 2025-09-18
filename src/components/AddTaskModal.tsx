@@ -33,7 +33,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-md transform transition-all duration-300 scale-100">
+      <div className="bg-white rounded-2xl p-6 w-full max-w-sm sm:max-w-md transform transition-all duration-300 scale-100 max-h-screen overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Добавить задачу</h2>
           <button
@@ -62,23 +62,77 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask 
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Время выполнения (минуты)
+              Время выполнения
             </label>
-            <input
-              type="number"
-              value={estimatedMinutes}
-              onChange={(e) => setEstimatedMinutes(e.target.value === '' ? '' : Number(e.target.value))}
-              className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none text-lg"
-              placeholder="Например: 15"
-              min="1"
-              max="300"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Оставь пустым, если не знаешь точное время
-            </p>
+            {/* Mobile: iPhone-style slider */}
+            <div className="sm:hidden">
+              <div className="bg-gray-100 rounded-xl p-4 mb-3">
+                <div className="text-center mb-3">
+                  <span className="text-2xl font-bold text-gray-800">
+                    {estimatedMinutes || 0} мин
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="120"
+                  step="5"
+                  value={estimatedMinutes || 0}
+                  onChange={(e) => setEstimatedMinutes(Number(e.target.value))}
+                  className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer slider-thumb"
+                  style={{ ['--value' as any]: `${((estimatedMinutes || 0) / 120) * 100}%` }}
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-2">
+                  <span>0</span>
+                  <span>30</span>
+                  <span>60</span>
+                  <span>90</span>
+                  <span>120</span>
+                </div>
+              </div>
+              <div className="flex gap-2 mb-4">
+                <button
+                  type="button"
+                  onClick={() => setEstimatedMinutes('')}
+                  className="flex-1 p-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300 transition-colors"
+                >
+                  Сбросить
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEstimatedMinutes(15)}
+                  className="flex-1 p-2 bg-blue-100 text-blue-700 rounded-lg text-sm hover:bg-blue-200 transition-colors"
+                >
+                  15 мин
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEstimatedMinutes(30)}
+                  className="flex-1 p-2 bg-blue-100 text-blue-700 rounded-lg text-sm hover:bg-blue-200 transition-colors"
+                >
+                  30 мин
+                </button>
+              </div>
+            </div>
+            {/* Desktop: Number input */}
+            <div className="hidden sm:block">
+              <input
+                type="number"
+                value={estimatedMinutes}
+                onChange={(e) => setEstimatedMinutes(e.target.value === '' ? '' : Number(e.target.value))}
+                className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-blue-400 focus:outline-none text-lg"
+                placeholder="Например: 15"
+                min="1"
+                max="300"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Оставь пустым, если не знаешь точное время
+              </p>
+            </div>
           </div>
 
-          <div>
+          {/* Icon selection - hidden on mobile */}
+          <div className="hidden sm:block">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Иконка
             </label>
