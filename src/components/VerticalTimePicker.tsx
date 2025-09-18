@@ -19,7 +19,12 @@ const VerticalTimePicker: React.FC<VerticalTimePickerProps> = ({ value, onChange
         {timeOptions.map((minutes) => (
           <button
             key={minutes}
-            onClick={() => {
+            type="button"
+            onClick={(e) => {
+              // Предотвращаем всплытие события до формы
+              e.preventDefault();
+              e.stopPropagation();
+              
               // Если нажали на уже выбранное время - сбрасываем его
               if (currentValue === minutes) {
                 onChange('');
