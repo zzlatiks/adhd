@@ -272,6 +272,18 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 <Icon name="MoreVertical" size={14} className="sm:size-5" />
               </button>
               
+              {/* Backdrop для меню */}
+              {showActionsMenu && (
+                <div 
+                  className="fixed inset-0 z-40" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowActionsMenu(false);
+                  }}
+                />
+              )}
+              
               {/* Выпадающее меню */}
               {showActionsMenu && (
                 <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[120px]">
@@ -280,7 +292,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
                       e.preventDefault();
                       e.stopPropagation();
                       onEdit(task.id);
-                      setShowActionsMenu(false);
+                      // Добавляем небольшую задержку перед закрытием меню для Safari
+                      setTimeout(() => {
+                        setShowActionsMenu(false);
+                      }, 10);
                     }}
                     className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-gray-700 first:rounded-t-lg"
                     data-testid={`menu-edit-${task.id}`}
@@ -292,8 +307,12 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
+                      // Сначала вызываем функцию удаления
                       onDelete(task.id);
-                      setShowActionsMenu(false);
+                      // Затем добавляем небольшую задержку перед закрытием меню для Safari
+                      setTimeout(() => {
+                        setShowActionsMenu(false);
+                      }, 10);
                     }}
                     className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-red-600 last:rounded-b-lg border-t border-gray-100"
                     data-testid={`menu-delete-${task.id}`}
