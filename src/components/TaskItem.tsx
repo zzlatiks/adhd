@@ -1,4 +1,5 @@
 import React, { useState, memo } from 'react';
+import { createPortal } from 'react-dom';
 import { Task } from '../types';
 import Icon from './Icon';
 
@@ -35,6 +36,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
   const [editingSubtaskId, setEditingSubtaskId] = useState<string | null>(null);
   const [editingSubtaskTitle, setEditingSubtaskTitle] = useState('');
   const [showActionsMenu, setShowActionsMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
+  const actionsButtonRef = React.useRef<HTMLButtonElement>(null);
 
   // Закрываем меню при клике вне его
   React.useEffect(() => {
@@ -163,7 +166,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
         : isOvertime 
           ? 'bg-red-50 border-red-300' 
           : getTaskColor()
-    }`}
+    } ${showActionsMenu ? 'pointer-events-none' : ''}`}
+      style={showActionsMenu ? { pointerEvents: 'none' } : {}}
       onClick={!hasSubtasks ? (e) => {
         e.preventDefault();
         // Не переключаем задачу если открыто меню действий или форма добавления подзадач
@@ -260,78 +264,113 @@ const TaskItem: React.FC<TaskItemProps> = ({
             
             <div className="relative">
               <button
+                ref={actionsButtonRef}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  
+                  if (!showActionsMenu && actionsButtonRef.current) {
+                    const rect = actionsButtonRef.current.getBoundingClientRect();
+                    setMenuPosition({
+                      top: rect.bottom + window.scrollY + 4,
+                      right: 10
+                    });
+                  }
+                  
                   setShowActionsMenu(!showActionsMenu);
                 }}
-                className="flex-shrink-0 w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] sm:min-w-[48px] rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-700 flex items-center justify-center transition-all duration-200"
+                className={`flex-shrink-0 w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] sm:min-w-[48px] rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-700 flex items-center justify-center transition-all duration-200 ${showActionsMenu ? 'pointer-events-auto' : ''}`}
+                style={showActionsMenu ? { pointerEvents: 'auto' } : {}}
                 title="Действия"
                 data-testid={`button-actions-${task.id}`}
               >
                 <Icon name="MoreVertical" size={14} className="sm:size-5" />
               </button>
               
-              {/* Backdrop для меню */}
-              {showActionsMenu && (
-                <div 
-                  className="fixed inset-0 z-50 bg-transparent" 
-                  style={{ touchAction: 'none' }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setShowActionsMenu(false);
-                  }}
-                  onTouchStart={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setShowActionsMenu(false);
-                  }}
-                />
-              )}
-              
-              {/* Выпадающее меню */}
-              {showActionsMenu && (
-                <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-[60] min-w-[120px]">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      // Увеличиваем задержку для более надежной работы в Safari
-                      setTimeout(() => {
-                        onEdit(task.id);
-                        setShowActionsMenu(false);
-                      }, 50);
+              {/* Portal для backdrop и меню - выносим на уровень document.body */}
+              {showActionsMenu && createPortal(
+                <>
+                  {/* Глобальный backdrop */}
+                  <div 
+                    className="fixed inset-0 bg-transparent"
+                    style={{ 
+                      zIndex: 9998,
+                      touchAction: 'none',
+                      pointerEvents: 'auto'
                     }}
-                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-gray-700 first:rounded-t-lg"
-                    data-testid={`menu-edit-${task.id}`}
-                  >
-                    <Icon name="Pencil" size={14} />
-                    Изменить
-                  </button>
-                  <button
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      // Увеличиваем задержку и добавляем защиту от повторных кликов
-                      if (showActionsMenu) {
+                      setShowActionsMenu(false);
+                    }}
+                    onTouchStart={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setShowActionsMenu(false);
+                    }}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  />
+                  
+                  {/* Позиционированное меню */}
+                  <div 
+                    className="fixed bg-white border border-gray-200 rounded-lg shadow-lg min-w-[120px]"
+                    style={{
+                      zIndex: 9999,
+                      right: `${menuPosition.right}px`,
+                      top: `${menuPosition.top}px`,
+                      pointerEvents: 'auto'
+                    }}
+                  >
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowActionsMenu(false);
+                        setTimeout(() => {
+                          onEdit(task.id);
+                        }, 10);
+                      }}
+                      onPointerDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-gray-700 first:rounded-t-lg"
+                      style={{ pointerEvents: 'auto' }}
+                      data-testid={`menu-edit-${task.id}`}
+                    >
+                      <Icon name="Pencil" size={14} />
+                      Изменить
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         setShowActionsMenu(false);
                         setTimeout(() => {
                           onDelete(task.id);
-                        }, 100);
-                      }
-                    }}
-                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-red-600 last:rounded-b-lg border-t border-gray-100"
-                    data-testid={`menu-delete-${task.id}`}
-                  >
-                    <Icon name="Trash2" size={14} />
-                    Удалить
-                  </button>
-                </div>
+                        }, 10);
+                      }}
+                      onPointerDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-red-600 last:rounded-b-lg border-t border-gray-100"
+                      style={{ pointerEvents: 'auto' }}
+                      data-testid={`menu-delete-${task.id}`}
+                    >
+                      <Icon name="Trash2" size={14} />
+                      Удалить
+                    </button>
+                  </div>
+                </>,
+                document.body
               )}
             </div>
           </div>
