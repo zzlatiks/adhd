@@ -570,6 +570,7 @@ function App() {
     );
   }, []);
 
+
   // Auto-update timers every second
   useEffect(() => {
     const interval = setInterval(() => {
@@ -606,6 +607,49 @@ function App() {
   const temporaryTasks = useMemo(() => getFilteredTasks('temporary'), [getFilteredTasks]);
   const allTasks = useMemo(() => [...dailyTasks, ...temporaryTasks], [dailyTasks, temporaryTasks]);
 
+  // Move task functions - work with visible list ordering
+  const moveTaskUp = useCallback((taskId: string) => {
+    setTasks(prevTasks => {
+      // Find current position in visible list
+      const visibleIndex = allTasks.findIndex(task => task.id === taskId);
+      if (visibleIndex <= 0) return prevTasks; // Already at top of visible list or not found
+      
+      // Get target task ID from visible list
+      const targetTaskId = allTasks[visibleIndex - 1].id;
+      
+      // Find both tasks in full array and swap
+      const newTasks = [...prevTasks];
+      const fullCurrentIndex = newTasks.findIndex(task => task.id === taskId);
+      const fullTargetIndex = newTasks.findIndex(task => task.id === targetTaskId);
+      
+      if (fullCurrentIndex === -1 || fullTargetIndex === -1) return prevTasks;
+      
+      [newTasks[fullCurrentIndex], newTasks[fullTargetIndex]] = [newTasks[fullTargetIndex], newTasks[fullCurrentIndex]];
+      return newTasks;
+    });
+  }, [allTasks]);
+
+  const moveTaskDown = useCallback((taskId: string) => {
+    setTasks(prevTasks => {
+      // Find current position in visible list
+      const visibleIndex = allTasks.findIndex(task => task.id === taskId);
+      if (visibleIndex === -1 || visibleIndex >= allTasks.length - 1) return prevTasks; // At bottom of visible list or not found
+      
+      // Get target task ID from visible list
+      const targetTaskId = allTasks[visibleIndex + 1].id;
+      
+      // Find both tasks in full array and swap
+      const newTasks = [...prevTasks];
+      const fullCurrentIndex = newTasks.findIndex(task => task.id === taskId);
+      const fullTargetIndex = newTasks.findIndex(task => task.id === targetTaskId);
+      
+      if (fullCurrentIndex === -1 || fullTargetIndex === -1) return prevTasks;
+      
+      [newTasks[fullCurrentIndex], newTasks[fullTargetIndex]] = [newTasks[fullTargetIndex], newTasks[fullCurrentIndex]];
+      return newTasks;
+    });
+  }, [allTasks]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="container mx-auto px-4 py-6 max-w-4xl">
@@ -615,10 +659,10 @@ function App() {
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:items-end sm:justify-between">
             <button
               onClick={handleNewDay}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-6 h-14 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg w-full sm:w-auto"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-4 sm:px-6 h-10 sm:h-14 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg w-full sm:w-auto text-sm sm:text-base"
               data-testid="button-new-day"
             >
-              <Icon name="RefreshCw" size={20} className="mr-2" />
+              <Icon name="RefreshCw" size={16} className="mr-1 sm:mr-2 sm:size-5" />
               Новый день
             </button>
             
@@ -627,24 +671,24 @@ function App() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowCompletedTasks(!showCompletedTasks)}
-                  className="px-4 h-14 min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg bg-gray-500 hover:bg-gray-600 text-white font-semibold"
+                  className="px-2 sm:px-4 h-10 sm:h-14 min-w-[44px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg bg-gray-500 hover:bg-gray-600 text-white font-semibold"
                   title={showCompletedTasks ? 'Скрыть выполненные' : 'Показать выполненные'}
                   data-testid="button-toggle-completed"
                 >
-                  <Icon name={showCompletedTasks ? "Eye" : "EyeOff"} size={24} />
+                  <Icon name={showCompletedTasks ? "Eye" : "EyeOff"} size={18} className="sm:size-6" />
                 </button>
                 
                 <button
                   onClick={exportTasks}
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-4 h-14 min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-2 sm:px-4 h-10 sm:h-14 min-w-[44px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
                   title="Экспорт задач"
                   data-testid="button-export"
                 >
-                  <Icon name="Upload" size={24} />
+                  <Icon name="Upload" size={18} className="sm:size-6" />
                 </button>
                 
-                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 h-14 min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer font-semibold" title="Импорт задач">
-                  <Icon name="Download" size={24} />
+                <label className="bg-indigo-500 hover:bg-indigo-600 text-white px-2 sm:px-4 h-10 sm:h-14 min-w-[44px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg cursor-pointer font-semibold" title="Импорт задач">
+                  <Icon name="Download" size={18} className="sm:size-6" />
                   <input
                     type="file"
                     accept=".json"
@@ -658,11 +702,11 @@ function App() {
               {/* Кнопка добавления задачи */}
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-6 h-16 rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 sm:px-6 h-12 sm:h-16 rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg"
                 title="Добавить задачу"
                 data-testid="button-add-task"
               >
-                <Icon name="Plus" size={32} />
+                <Icon name="Plus" size={24} className="sm:size-8" />
               </button>
             </div>
           </div>
@@ -709,6 +753,8 @@ function App() {
                     onEditSubtask={editSubtask}
                     onStartTimer={startTimer}
                     onStopTimer={stopTimer}
+                    onMoveUp={moveTaskUp}
+                    onMoveDown={moveTaskDown}
                   />
                 </div>
               ))}

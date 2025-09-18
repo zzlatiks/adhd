@@ -13,6 +13,8 @@ interface TaskItemProps {
   onEditSubtask: (taskId: string, subtaskId: string, newTitle: string) => void;
   onStartTimer: (taskId: string) => void;
   onStopTimer: (taskId: string) => void;
+  onMoveUp: (taskId: string) => void;
+  onMoveDown: (taskId: string) => void;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({ 
@@ -25,7 +27,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onEdit,
   onEditSubtask,
   onStartTimer,
-  onStopTimer 
+  onStopTimer,
+  onMoveUp,
+  onMoveDown 
 }) => {
   const [showSubtasks, setShowSubtasks] = useState(false);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
@@ -139,7 +143,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
       <div className="flex items-center p-3 sm:p-4 transition-all duration-300 relative">
         <button
           onClick={() => hasSubtasks ? setShowSubtasks(!showSubtasks) : onToggle(task.id)}
-          className={`flex-shrink-0 w-14 h-14 min-w-[56px] rounded-full border-3 flex items-center justify-center transition-all duration-300 mr-3 sm:mr-4 ${
+          className={`flex-shrink-0 w-10 sm:w-14 h-10 sm:h-14 min-w-[40px] sm:min-w-[56px] rounded-full border-3 flex items-center justify-center transition-all duration-300 mr-2 sm:mr-4 ${
             hasSubtasks 
               ? 'bg-white border-blue-500 text-blue-500 hover:border-blue-600 hover:text-blue-600' 
               : 'bg-white border-gray-300 text-gray-400 hover:border-blue-400 hover:text-blue-400'
@@ -147,11 +151,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
           data-testid={`button-toggle-${task.id}`}
         >
           {hasSubtasks ? (
-            <Icon name={showSubtasks ? "ChevronUp" : "ChevronDown"} size={26} />
+            <Icon name={showSubtasks ? "ChevronUp" : "ChevronDown"} size={20} className="sm:size-6" />
           ) : isMainTaskCompleted ? (
-            <Icon name="Check" size={26} className="text-green-500" />
+            <Icon name="Check" size={20} className="text-green-500 sm:size-6" />
           ) : (
-            <Icon name="Circle" size={26} />
+            <Icon name="Circle" size={20} className="sm:size-6" />
           )}
         </button>
 
@@ -161,7 +165,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <span className={`text-lg font-semibold transition-all duration-300 ${
+              <span className={`text-base sm:text-lg font-semibold transition-all duration-300 ${
                 isMainTaskCompleted ? 'text-green-700 line-through' : isOvertime ? 'text-red-700' : 'text-gray-800'
               }`}>
                 {task.title}
@@ -169,7 +173,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
               {task.estimatedMinutes && (
                 <span 
                   onClick={() => task.isTimerRunning ? onStopTimer(task.id) : onStartTimer(task.id)}
-                  className={`text-sm px-2 py-1 rounded-full font-medium cursor-pointer transition-all duration-200 hover:scale-105 ${
+                  className={`text-xs sm:text-sm px-1 sm:px-2 py-1 rounded-full font-medium cursor-pointer transition-all duration-200 hover:scale-105 ${
                     getTimerColor()
                   }`}
                   title={task.isTimerRunning ? 'Остановить таймер' : 'Запустить таймер'}
@@ -198,29 +202,47 @@ const TaskItem: React.FC<TaskItemProps> = ({
         <div className="flex items-center gap-2 sm:gap-2">
           <button
             onClick={() => setShowAddSubtask(!showAddSubtask)}
-            className="flex-shrink-0 w-12 h-12 min-w-[48px] rounded-lg bg-blue-100 text-blue-500 hover:bg-blue-200 hover:text-blue-600 flex items-center justify-center transition-all duration-200"
+            className="flex-shrink-0 w-9 sm:w-12 h-9 sm:h-12 min-w-[36px] sm:min-w-[48px] rounded-lg bg-blue-100 text-blue-500 hover:bg-blue-200 hover:text-blue-600 flex items-center justify-center transition-all duration-200"
             title="Добавить подзадачу"
             data-testid={`button-add-subtask-${task.id}`}
           >
-            <Icon name="Plus" size={20} />
+            <Icon name="Plus" size={16} className="sm:size-5" />
           </button>
           
           
           <button
             onClick={() => onEdit(task.id)}
-            className="flex-shrink-0 w-12 h-12 min-w-[48px] rounded-lg bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700 flex items-center justify-center transition-all duration-200"
+            className="flex-shrink-0 w-9 sm:w-12 h-9 sm:h-12 min-w-[36px] sm:min-w-[48px] rounded-lg bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700 flex items-center justify-center transition-all duration-200"
             title="Редактировать задачу"
             data-testid={`button-edit-${task.id}`}
           >
-            <Icon name="Pencil" size={18} />
+            <Icon name="Pencil" size={16} className="sm:size-5" />
+          </button>
+          
+          <button
+            onClick={() => onMoveUp(task.id)}
+            className="flex-shrink-0 w-9 sm:w-12 h-9 sm:h-12 min-w-[36px] sm:min-w-[48px] rounded-lg bg-indigo-100 text-indigo-600 hover:bg-indigo-200 hover:text-indigo-700 flex items-center justify-center transition-all duration-200"
+            title="Переместить вверх"
+            data-testid={`button-move-up-${task.id}`}
+          >
+            <Icon name="ArrowUp" size={16} className="sm:size-5" />
+          </button>
+          
+          <button
+            onClick={() => onMoveDown(task.id)}
+            className="flex-shrink-0 w-9 sm:w-12 h-9 sm:h-12 min-w-[36px] sm:min-w-[48px] rounded-lg bg-purple-100 text-purple-600 hover:bg-purple-200 hover:text-purple-700 flex items-center justify-center transition-all duration-200"
+            title="Переместить вниз"
+            data-testid={`button-move-down-${task.id}`}
+          >
+            <Icon name="ArrowDown" size={16} className="sm:size-5" />
           </button>
           
           <button
             onClick={() => onDelete(task.id)}
-            className="flex-shrink-0 w-12 h-12 min-w-[48px] rounded-lg bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600 flex items-center justify-center transition-all duration-200"
+            className="flex-shrink-0 w-9 sm:w-12 h-9 sm:h-12 min-w-[36px] sm:min-w-[48px] rounded-lg bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600 flex items-center justify-center transition-all duration-200"
             data-testid={`button-delete-${task.id}`}
           >
-            <Icon name="Trash2" size={20} />
+            <Icon name="Trash2" size={16} className="sm:size-5" />
           </button>
         </div>
       </div>
