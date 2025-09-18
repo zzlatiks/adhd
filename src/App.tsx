@@ -612,20 +612,6 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="container mx-auto px-4 py-6 max-w-4xl">
 
-        {/* Header */}
-        <div className="bg-white rounded-2xl p-3 sm:p-6 shadow-lg border-2 border-gray-100 mb-4 sm:mb-6">
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:items-end sm:justify-between">
-            <button
-              onClick={handleNewDay}
-              className="bg-orange-500 hover:bg-orange-600 text-white w-8 h-8 sm:w-14 sm:h-14 rounded-xl font-semibold flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg"
-              title="Новый день"
-              data-testid="button-new-day"
-            >
-              <Icon name="RefreshCw" size={16} className="sm:size-6" />
-            </button>
-            
-          </div>
-        </div>
 
         {/* All Tasks */}
         {allTasks.length > 0 && (
@@ -717,6 +703,16 @@ function App() {
                 data-testid="input-import"
               />
             </label>
+            
+            {/* Кнопка "Новый день" */}
+            <button
+              onClick={handleNewDay}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-3 sm:px-4 h-10 sm:h-12 min-w-[44px] sm:min-w-[56px] rounded-xl flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold"
+              title="Новый день"
+              data-testid="button-new-day"
+            >
+              <Icon name="RefreshCw" size={16} className="sm:size-5" />
+            </button>
           </div>
         </div>
 

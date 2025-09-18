@@ -165,7 +165,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
   return (
     <div 
-      className={`rounded-xl border-2 shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden cursor-pointer ${
+      className={`rounded-xl border-2 shadow-md hover:shadow-lg transition-all duration-300 relative cursor-pointer ${
       isMainTaskCompleted 
         ? 'bg-green-50 border-green-200' 
         : isOvertime 
