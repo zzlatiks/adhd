@@ -429,7 +429,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
-                  handleAddSubtask(new Event('submit') as any);
+                  if (newSubtaskTitle.trim()) {
+                    onAddSubtask(task.id, newSubtaskTitle.trim());
+                    setNewSubtaskTitle('');
+                    setShowAddSubtask(false);
+                  }
                 }
               }}
               placeholder="Название подзадачи..."
