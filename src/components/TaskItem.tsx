@@ -432,19 +432,21 @@ const TaskItem: React.FC<TaskItemProps> = ({
             />
             <button
               type="submit"
-              className="w-8 sm:w-10 h-8 sm:h-10 rounded bg-green-100 text-green-600 hover:bg-green-200 flex items-center justify-center transition-all duration-200 flex-shrink-0"
+              className="w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] min-h-[44px] rounded bg-green-100 text-green-600 hover:bg-green-200 flex items-center justify-center transition-all duration-200 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!newSubtaskTitle.trim()}
               title="Добавить"
+              data-testid={`button-add-subtask-submit-${task.id}`}
             >
-              <Icon name="Check" size={14} />
+              <Icon name="Check" size={16} />
             </button>
             <button
               type="button"
               onClick={() => setShowAddSubtask(false)}
-              className="w-8 sm:w-10 h-8 sm:h-10 rounded bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-all duration-200 flex-shrink-0"
+              className="w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] min-h-[44px] rounded bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-all duration-200 flex-shrink-0"
               title="Отмена"
+              data-testid={`button-add-subtask-cancel-${task.id}`}
             >
-              <Icon name="X" size={14} />
+              <Icon name="X" size={16} />
             </button>
           </form>
         </div>
