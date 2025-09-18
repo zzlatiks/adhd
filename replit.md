@@ -2,6 +2,10 @@
 
 This is an ADHD Kids Task Manager application built as a React TypeScript web app. The application is designed to help children with ADHD manage their daily routines and tasks through a gamified, visually appealing interface. It features task tracking with progress visualization, subtask management, and motivational elements like star ratings and achievement badges.
 
+# Recent Changes
+
+- **September 18, 2025**: Mobile interface optimization completed - fixed three-dots menu functionality with proper event handling, reduced checkbox sizes from 44×44px to 32×40px for better visual balance, made task cards fully clickable for completion toggling, and resolved subtask form overlay issues by restricting display to expanded subtask states. Added comprehensive event propagation controls to prevent unintended interactions between UI elements.
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
