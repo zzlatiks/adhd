@@ -418,8 +418,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
         </div>
       )}
 
-      {/* Add Subtask Form - показывается только когда подзадачи развернуты */}
-      {showAddSubtask && showSubtasks && (
+      {/* Add Subtask Form - показывается когда нажата кнопка добавления подзадач */}
+      {showAddSubtask && (
         <div className="border-t border-gray-200 p-3 sm:p-4 bg-blue-50">
           <form onSubmit={handleAddSubtask} className="flex gap-2 items-start">
             <input
