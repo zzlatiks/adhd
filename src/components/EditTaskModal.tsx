@@ -47,7 +47,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, onUpdate
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-md transform transition-all duration-300 scale-100">
+      <div className="bg-white rounded-2xl p-6 w-full max-w-sm sm:max-w-md transform transition-all duration-300 scale-100 max-h-screen overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Изменить задачу</h2>
           <button
@@ -120,7 +120,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, onUpdate
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Иконка
             </label>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
               {taskIcons.map((iconName) => {
                 return (
                   <button
