@@ -62,9 +62,6 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask 
 
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Время выполнения
-            </label>
             {/* Mobile: Vertical iPhone-style time picker */}
             <div className="sm:hidden">
               <VerticalTimePicker
