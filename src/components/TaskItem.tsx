@@ -294,7 +294,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     data-testid={`menu-edit-${task.id}`}
                   >
                     <Icon name="Pencil" size={14} />
-                    Редактировать
+                    Изменить
                   </button>
                   <button
                     onClick={(e) => {
@@ -397,7 +397,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     <button
                       onClick={() => handleEditSubtask(subtask.id, subtask.title)}
                       className="flex-shrink-0 w-11 sm:w-12 h-11 sm:h-12 min-w-[44px] sm:min-w-[48px] rounded bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700 flex items-center justify-center transition-all duration-200 mr-1"
-                      title="Редактировать подзадачу"
+                      title="Изменить подзадачу"
                       data-testid={`button-edit-subtask-${subtask.id}`}
                     >
                       <Icon name="Pencil" size={14} />
@@ -420,26 +420,27 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
       {/* Add Subtask Form - показывается только когда подзадачи развернуты */}
       {showAddSubtask && showSubtasks && (
-        <div className="border-t border-gray-200 p-2 sm:p-4 bg-blue-50">
-          <form onSubmit={handleAddSubtask} className="flex gap-1 sm:gap-2">
+        <div className="border-t border-gray-200 p-3 sm:p-4 bg-blue-50">
+          <form onSubmit={handleAddSubtask} className="flex gap-2 items-start">
             <input
               type="text"
               value={newSubtaskTitle}
               onChange={(e) => setNewSubtaskTitle(e.target.value)}
               placeholder="Название подзадачи..."
-              className="flex-1 p-1.5 sm:p-2 border border-gray-300 rounded-lg focus:border-blue-400 focus:outline-none text-xs sm:text-sm"
+              className="flex-1 p-2 sm:p-3 border border-gray-300 rounded-lg focus:border-blue-400 focus:outline-none text-sm min-h-[40px] max-w-full"
               autoFocus
             />
             <button
               type="submit"
-              className="px-2 sm:px-4 py-1.5 sm:py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-xs sm:text-sm font-medium"
+              className="px-3 sm:px-4 py-2 sm:py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium min-h-[40px] whitespace-nowrap"
+              disabled={!newSubtaskTitle.trim()}
             >
               Добавить
             </button>
             <button
               type="button"
               onClick={() => setShowAddSubtask(false)}
-              className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors text-xs sm:text-sm"
+              className="px-2 sm:px-3 py-2 sm:py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors text-sm min-h-[40px] flex items-center justify-center"
             >
               <Icon name="X" size={16} />
             </button>
