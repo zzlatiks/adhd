@@ -2,7 +2,7 @@ import React from 'react';
 
 interface VerticalTimePickerProps {
   value: number | '';
-  onChange: (value: number) => void;
+  onChange: (value: number | '') => void;
 }
 
 const VerticalTimePicker: React.FC<VerticalTimePickerProps> = ({ value, onChange }) => {
@@ -19,7 +19,14 @@ const VerticalTimePicker: React.FC<VerticalTimePickerProps> = ({ value, onChange
         {timeOptions.map((minutes) => (
           <button
             key={minutes}
-            onClick={() => onChange(minutes)}
+            onClick={() => {
+              // Если нажали на уже выбранное время - сбрасываем его
+              if (currentValue === minutes) {
+                onChange('');
+              } else {
+                onChange(minutes);
+              }
+            }}
             className={`p-4 rounded-lg text-lg font-semibold transition-all duration-200 ${
               currentValue === minutes
                 ? 'bg-blue-500 text-white shadow-md'
