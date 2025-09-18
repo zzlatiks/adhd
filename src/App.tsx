@@ -607,48 +607,6 @@ function App() {
   const temporaryTasks = useMemo(() => getFilteredTasks('temporary'), [getFilteredTasks]);
   const allTasks = useMemo(() => [...dailyTasks, ...temporaryTasks], [dailyTasks, temporaryTasks]);
 
-  // Move task functions - work with visible list ordering
-  const moveTaskUp = useCallback((taskId: string) => {
-    setTasks(prevTasks => {
-      // Find current position in visible list
-      const visibleIndex = allTasks.findIndex(task => task.id === taskId);
-      if (visibleIndex <= 0) return prevTasks; // Already at top of visible list or not found
-      
-      // Get target task ID from visible list
-      const targetTaskId = allTasks[visibleIndex - 1].id;
-      
-      // Find both tasks in full array and swap
-      const newTasks = [...prevTasks];
-      const fullCurrentIndex = newTasks.findIndex(task => task.id === taskId);
-      const fullTargetIndex = newTasks.findIndex(task => task.id === targetTaskId);
-      
-      if (fullCurrentIndex === -1 || fullTargetIndex === -1) return prevTasks;
-      
-      [newTasks[fullCurrentIndex], newTasks[fullTargetIndex]] = [newTasks[fullTargetIndex], newTasks[fullCurrentIndex]];
-      return newTasks;
-    });
-  }, [allTasks]);
-
-  const moveTaskDown = useCallback((taskId: string) => {
-    setTasks(prevTasks => {
-      // Find current position in visible list
-      const visibleIndex = allTasks.findIndex(task => task.id === taskId);
-      if (visibleIndex === -1 || visibleIndex >= allTasks.length - 1) return prevTasks; // At bottom of visible list or not found
-      
-      // Get target task ID from visible list
-      const targetTaskId = allTasks[visibleIndex + 1].id;
-      
-      // Find both tasks in full array and swap
-      const newTasks = [...prevTasks];
-      const fullCurrentIndex = newTasks.findIndex(task => task.id === taskId);
-      const fullTargetIndex = newTasks.findIndex(task => task.id === targetTaskId);
-      
-      if (fullCurrentIndex === -1 || fullTargetIndex === -1) return prevTasks;
-      
-      [newTasks[fullCurrentIndex], newTasks[fullTargetIndex]] = [newTasks[fullTargetIndex], newTasks[fullCurrentIndex]];
-      return newTasks;
-    });
-  }, [allTasks]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -659,11 +617,11 @@ function App() {
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:items-end sm:justify-between">
             <button
               onClick={handleNewDay}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-3 sm:px-6 h-8 sm:h-14 rounded-xl font-semibold flex items-center transition-all duration-200 transform hover:scale-105 shadow-lg w-full sm:w-auto text-xs sm:text-base"
+              className="bg-orange-500 hover:bg-orange-600 text-white w-8 h-8 sm:w-14 sm:h-14 rounded-xl font-semibold flex items-center justify-center transition-all duration-200 transform hover:scale-105 shadow-lg"
+              title="Новый день"
               data-testid="button-new-day"
             >
-              <Icon name="RefreshCw" size={14} className="mr-1 sm:mr-2 sm:size-5" />
-              Новый день
+              <Icon name="RefreshCw" size={16} className="sm:size-6" />
             </button>
             
             <div className="flex gap-3 flex-wrap items-center justify-center w-full sm:w-auto">
@@ -753,8 +711,6 @@ function App() {
                     onEditSubtask={editSubtask}
                     onStartTimer={startTimer}
                     onStopTimer={stopTimer}
-                    onMoveUp={moveTaskUp}
-                    onMoveDown={moveTaskDown}
                   />
                 </div>
               ))}
