@@ -75,7 +75,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
   const handleAddSubtask = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('handleAddSubtask triggered', { title: newSubtaskTitle, taskId: task.id });
     if (newSubtaskTitle.trim()) {
+      console.log('Adding subtask:', newSubtaskTitle.trim());
       onAddSubtask(task.id, newSubtaskTitle.trim());
       setNewSubtaskTitle('');
       setShowAddSubtask(false);
@@ -426,6 +428,13 @@ const TaskItem: React.FC<TaskItemProps> = ({
               type="text"
               value={newSubtaskTitle}
               onChange={(e) => setNewSubtaskTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  console.log('Enter pressed, calling handleAddSubtask');
+                  handleAddSubtask(new Event('submit') as any);
+                }
+              }}
               placeholder="Название подзадачи..."
               className="flex-1 p-2 sm:p-3 border border-gray-300 rounded-lg focus:border-blue-400 focus:outline-none text-sm min-h-[40px] max-w-full"
               autoFocus
